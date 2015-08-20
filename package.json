@@ -1,0 +1,31 @@
+{
+  "name": "faction",
+  "version": "0.0.1",
+  "description": "Utilities for simple, DRY flux actions",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "./node_modules/tape/bin/tape tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/af/faction"
+  },
+  "keywords": [
+    "flux",
+    "redux",
+    "actions",
+    "actionCreators"
+  ],
+  "author": "Aaron Franks (http://aaronfranks.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/af/faction/issues"
+  },
+  "homepage": "https://github.com/af/faction",
+  "devDependencies": {
+    "tape": "^4.2.0"
+  }
+}
