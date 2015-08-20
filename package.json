@@ -2,7 +2,7 @@
   "name": "faction",
   "version": "0.0.1",
   "description": "Utilities for simple, DRY flux actions",
-  "main": "index.js",
+  "main": "faction.js",
   "directories": {
     "test": "tests"
   },

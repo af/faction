@@ -1,4 +1,6 @@
+;(function(global) {       // IIFE for legacy non-module usage
 'use strict'
+
 
 function createFaction(actionSpecs, options) {
     var constants = {}
@@ -21,6 +23,13 @@ function createFaction(actionSpecs, options) {
     }
 }
 
-module.exports = {
+var exports = {
     create: createFaction
 }
+
+
+// Export for CommonJS, or else add a global faction variable:
+if (typeof(module) !== 'undefined') module.exports = exports
+else global.faction = exports
+
+}(this))
