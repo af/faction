@@ -18,6 +18,10 @@ test('constants and funcs are created as expected', function(t) {
     t.equal(f().type, 'TEST_ACTION')
     t.equal(f({ foo: 'bar' }).payload.foo, 'bar')
 
+    // The action object should have `meta: {}`
+    t.equal(typeof f({ foo: 'bar' }).meta, 'object')
+    t.equal(typeof f({ foo: 'bar' }).meta.hasOwnProperty, 'function')
+
     t.equal(output.constants.TEST_ACTION, 'TEST_ACTION')
     t.end()
 })
@@ -32,5 +36,15 @@ test('constants and funcs are frozen', function(t) {
     // Try to overwrite a constant - should fail silently
     output.constants.TEST_ACTION = 'asdf'
     t.equal(output.constants.TEST_ACTION, 'TEST_ACTION')
+    t.end()
+})
+
+test('errors are handling correctly', function(t) {
+    var err = new Error('fail')
+    var output = faction.create({ TEST_ACTION: null })
+    var result = output.funcs.TEST_ACTION(err)
+
+    t.equal(result.error, true)
+    t.equal(result.payload, err)
     t.end()
 })

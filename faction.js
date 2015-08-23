@@ -8,7 +8,17 @@ function createFaction(actionSpecs, options) {
 
     function makeActionCreator(key) {
         return function actionCreator(args) {
-            return { type: key, payload: args }
+            // If action argument is an error object, follow the FSA convention:
+            if (args instanceof Error) {
+                return {
+                    type: key,
+                    payload: args,
+                    error: true,
+                    meta: {}
+                }
+            }
+
+            return { type: key, payload: args, meta: {} }
         }
     }
 
