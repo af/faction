@@ -24,9 +24,9 @@ module.exports = actions
 
 **app.js**
 ```
-let { constants, funcs } = require('./actions')
-constants                           // => { ADD_TODO: 'ADD_TODO', EDIT_TODO: 'EDIT_TODO' ... }
-funcs.ADD_TODO({ text: 'hi' })      // => { type: 'ADD_TODO', payload: { text: 'hi' } }
+let { types, creators } = require('./actions')
+types                               // => { ADD_TODO: 'ADD_TODO', EDIT_TODO: 'EDIT_TODO' ... }
+creators.ADD_TODO({ text: 'hi' })   // => { type: 'ADD_TODO', payload: { text: 'hi' } }
 ```
 
 ## License
