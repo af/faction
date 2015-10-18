@@ -67,7 +67,7 @@ var validators = {
     },
 
     number: function(x) {
-        if (typeof x === 'number') return x
+        if (typeof x === 'number' && !isNaN(x)) return x
         else throw new ActionParamError('Expected "' + x + '" to be a number')
     },
 

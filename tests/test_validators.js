@@ -26,6 +26,7 @@ test('boolean validator', function(t) {
 test('number validator', function(t) {
     t.equal(v.number(5), 5)
     t.throws(function() { v.number('5') }, ActionParamError)
+    t.throws(function() { v.number(NaN) }, ActionParamError)
     t.throws(function() { v.number(null) }, ActionParamError)
     t.throws(function() { v.number(true) }, ActionParamError)
     t.throws(function() { v.number({}) }, ActionParamError)
