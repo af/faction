@@ -54,3 +54,11 @@ test('array validator', function(t) {
     t.throws(function() { v.array({}) }, ActionParamError)
     t.end()
 })
+
+test('withDefault()', function(t) {
+    var validatorWithDefault = v.number.withDefault(42)
+    t.equal(validatorWithDefault(), 42)
+    t.equal(validatorWithDefault(10), 10)
+    t.throws(function() { validatorWithDefault('asdf') }, ActionParamError)
+    t.end()
+});

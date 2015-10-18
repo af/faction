@@ -17,7 +17,7 @@ var v = faction.validators
 var actionConstantSpecs = {
     ADD_TODO: { text: v.string },
     EDIT_TODO: { text: v.string },
-    MARK_TODO: { isDone: v.boolean },
+    MARK_TODO: { isDone: v.boolean.withDefault(true) },
 }
 
 var actions = faction.create(actionConstantSpecs, options)

@@ -87,6 +87,23 @@ var validators = {
     },
 }
 
+// Extra function to provide an default value for each type of built-in validator.
+// This effectively makes the field optional.
+// Example usage:
+//      v.string.withDefault('hello')
+function withDefault(defaultValue) {
+    /* jshint validthis:true */
+    var validatorFn = this
+    return function(givenValue) {
+        if (typeof givenValue === 'undefined') return defaultValue
+        else return validatorFn(givenValue)
+    }
+}
+
+for (var k in validators) {
+    validators[k].withDefault = withDefault.bind(validators[k])
+}
+
 var exports = {
     create: createFaction,
     validators: validators,
