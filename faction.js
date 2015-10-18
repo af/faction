@@ -7,12 +7,24 @@ function createFaction(actionSpecs, options) {
     var creators = {}
 
     function makeActionCreator(key, spec) {
-        return function actionCreator(args) {
-            // TODO: validate args against spec here
-            var action = { type: key, payload: args, meta: {} }
+        return function actionCreator(argsHash) {
+            argsHash = argsHash || {}
+
+            // validate argsHash against action spec, if one was given:
+            if (spec) {
+                var specKeys = Object.keys(spec)
+                specKeys.forEach(function(k) {
+                    var validator = spec[k]
+                    // TODO: assign validated values to a cloned object?
+                    argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
+                })
+            }
+
+            var action = { type: key, payload: argsHash, meta: {} }
 
             // If action argument is an error object, follow the FSA convention:
-            if (args instanceof Error) {
+            // TODO: skip validation for error case?
+            if (argsHash instanceof Error) {
                 action.error = true
                 return action
             }
