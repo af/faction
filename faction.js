@@ -64,6 +64,11 @@ var validators = {
         else throw new ActionParamError('Expected "' + x + '" to be a boolean')
     },
 
+    object: function(x) {
+        if (typeof x === 'object' && x && !Array.isArray(x)) return x
+        else throw new ActionParamError('Expected "' + x + '" to be an object')
+    },
+
     array: function(x) {
         if (Array.isArray(x)) return x
         else throw new ActionParamError('Expected "' + x + '" to be an array')
@@ -72,7 +77,8 @@ var validators = {
 
 var exports = {
     create: createFaction,
-    validators: validators
+    validators: validators,
+    ActionParamError: ActionParamError
 }
 
 
