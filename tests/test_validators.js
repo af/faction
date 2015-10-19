@@ -62,3 +62,23 @@ test('withDefault()', function(t) {
     t.throws(function() { validatorWithDefault('asdf') }, ActionParamError)
     t.end()
 });
+
+test('enum()', function(t) {
+    t.throws(function() { v.number.enum('not an array') }, TypeError)
+
+    var validatorWithEnum = v.number.enum([1,2,3])
+    t.equal(validatorWithEnum(1), 1)
+    t.equal(validatorWithEnum(2), 2)
+    t.throws(function() { validatorWithEnum() }, ActionParamError)
+    t.throws(function() { validatorWithEnum(16) }, ActionParamError)
+    t.end()
+});
+
+test('enum() with a default value', function(t) {
+    var complexValidator = v.number.enum([1,2,3], 1)
+    t.equal(complexValidator(1), 1)
+    t.equal(complexValidator(2), 2)
+    t.equal(complexValidator(), 1)
+    t.throws(function() { complexValidator(16) }, ActionParamError)
+    t.end()
+});

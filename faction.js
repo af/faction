@@ -100,16 +100,34 @@ function withDefault(defaultValue) {
     }
 }
 
+// Add validation against an enum for any of the built-in validators
+// Example usage:
+//      v.number.enum([1, 2, 3], 1)
+function withEnum(optionsArray, defaultValue) {
+    /* jshint validthis:true */
+    if (!Array.isArray(optionsArray)) throw new TypeError('enum() requires an array argument')
+    var validatorFn = this
+    var hasDefault = typeof defaultValue !== 'undefined'
+    return function(givenValue) {
+        var isValid = (optionsArray.indexOf(givenValue) !== -1)
+        if (hasDefault && typeof givenValue === 'undefined') return defaultValue
+        else if (!isValid) throw new ActionParamError(givenValue + ' is not in ' +
+                                                 JSON.stringify(optionsArray))
+        else return validatorFn(givenValue)
+    }
+}
+
 for (var k in validators) {
     validators[k].withDefault = withDefault.bind(validators[k])
+    validators[k].enum = withEnum.bind(validators[k])
 }
+
 
 var exports = {
     create: createFaction,
     validators: validators,
     ActionParamError: ActionParamError
 }
-
 
 // Export for CommonJS, or else add a global faction variable:
 if (typeof(module) !== 'undefined') module.exports = exports
