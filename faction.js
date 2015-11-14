@@ -38,7 +38,8 @@ function _makeActionCreator(key, spec, service) {
         if (service) {
             // The service function *must* return a Promise, or else we throw:
             var result = service(argsHash)
-            if (!(result instanceof Promise)) throw new Error('Service did not return a Promise')
+            var resultIsPromise = result && typeof result.then === 'function'
+            if (!resultIsPromise) throw new Error('Service did not return a Promise')
             action.payload = result
         } else {
             action.payload = argsHash
