@@ -11,7 +11,7 @@ test('create() returns an object with types and creators', function(t) {
 })
 
 test('types and creators are created as expected', function(t) {
-    var output = faction.create({ TEST_ACTION: null })
+    var output = faction.create({ TEST_ACTION: {} })
     var f = output.creators.TEST_ACTION
     t.equal(typeof f, 'function')
     t.equal(typeof f(), 'object')
@@ -27,7 +27,7 @@ test('types and creators are created as expected', function(t) {
 })
 
 test('types and creators are frozen', function(t) {
-    var output = faction.create({ TEST_ACTION: null })
+    var output = faction.create({ TEST_ACTION: {} })
 
     // Try to overwrite an action creator - should fail silently
     output.creators.TEST_ACTION = 'asdf'
@@ -41,7 +41,7 @@ test('types and creators are frozen', function(t) {
 
 test('errors are handling correctly', function(t) {
     var err = new Error('fail')
-    var output = faction.create({ TEST_ACTION: null })
+    var output = faction.create({ TEST_ACTION: {} })
     var result = output.creators.TEST_ACTION(err)
 
     t.equal(result.error, true)

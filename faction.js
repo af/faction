@@ -2,46 +2,56 @@
 'use strict'
 
 
+// Return a regular, synchronous action creator function
+function _makePlainActionCreator(key, spec) {
+    return function actionCreator(argsHash) {
+        argsHash = argsHash || {}
+
+        // validate argsHash against action spec, if one was given:
+        if (spec) {
+            var specKeys = Object.keys(spec)
+            specKeys.forEach(function(k) {
+                var validator = spec[k]
+                // TODO: assign validated values to a cloned object?
+                argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
+            })
+        }
+
+        var action = { type: key, payload: argsHash, meta: {} }
+
+        // If action argument is an error object, follow the FSA convention:
+        // TODO: skip validation for error case?
+        if (argsHash instanceof Error) {
+            action.error = true
+            return action
+        }
+
+        return action
+    }
+}
+
+
 function createFaction(actionSpecs, options) {
     var types = {}
     var creators = {}
 
-    function makeActionCreator(key, spec) {
-        return function actionCreator(argsHash) {
-            argsHash = argsHash || {}
-
-            // validate argsHash against action spec, if one was given:
-            if (spec) {
-                var specKeys = Object.keys(spec)
-                specKeys.forEach(function(k) {
-                    var validator = spec[k]
-                    // TODO: assign validated values to a cloned object?
-                    argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
-                })
-            }
-
-            var action = { type: key, payload: argsHash, meta: {} }
-
-            // If action argument is an error object, follow the FSA convention:
-            // TODO: skip validation for error case?
-            if (argsHash instanceof Error) {
-                action.error = true
-                return action
-            }
-
-            return action
-        }
-    }
-
     for (var key in actionSpecs) {
         types[key] = key
-        creators[key] = makeActionCreator(key, actionSpecs[key])
+        var spec = actionSpecs[key]
+        if (!spec) break
+        else creators[key] = _makePlainActionCreator(key, spec)
     }
 
     return {
         types: Object.freeze(types),
         creators: Object.freeze(creators)
     }
+}
+
+
+// TODO: need redux middleware for this
+// TODO: need module-level service registry
+function useService(service, argSpecs) {
 }
 
 
@@ -125,6 +135,7 @@ for (var k in validators) {
 
 var exports = {
     create: createFaction,
+    useService: useService,
     validators: validators,
     ActionParamError: ActionParamError
 }
