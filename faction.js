@@ -70,7 +70,9 @@ function createFaction(actionSpecs, options) {
 }
 
 
-// TODO: need redux middleware for this
+// Register a service function for handling asynchronous actions.
+// Returns an object that createFaction() will use to make the appropriate
+// Promise-returning action creator
 function useService(service, argSpecs) {
     if (typeof service !== 'function') {
         throw new Error('First arg to useService must be a function, got: ' +
