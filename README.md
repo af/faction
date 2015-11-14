@@ -12,7 +12,7 @@ creating and managing Flux actions. Early WIP!
 ## Usage
 
 Note: these examples use ES6/2015 for brevity, but faction will work in any ES5
-environment.
+environment (though you may need a Promise polyfill for async action).
 
 **actions.js**
 ```js

@@ -48,5 +48,9 @@
     "sub"           : true,   // Tolerates use of subscript notation
                               // (eg. obj['key'] instead of obj.key).
     "supernew"      : true,   // Tolerate `new function()` and `new Object;`.
-    "lastsemic"     : true    // Tolerate missing ; for final statements in blocks
+    "lastsemic"     : true,   // Tolerate missing ; for final statements in blocks
+
+    "globals":  {
+        "Promise": true
+    }
 }

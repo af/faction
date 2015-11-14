@@ -2,22 +2,40 @@
 'use strict'
 
 
-// Return a regular, synchronous action creator function
-function _makePlainActionCreator(key, spec) {
+function _validate(argsHash, spec) {
+    // validate argsHash against action spec, if one was given:
+    if (spec) {
+        var specKeys = Object.keys(spec)
+        specKeys.forEach(function(k) {
+            var validator = spec[k]
+            // TODO: assign validated values to a cloned object?
+            argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
+        })
+    }
+}
+
+
+// Return an action creator function
+//
+// If a service function is given, the action's payload will be a Promise, which
+// is returned from the service function.
+//
+// Otherwise the action creator is fully synchronous, and the Object literal
+// passed in to it will be the action payload.
+function _makeActionCreator(key, spec, service) {
     return function actionCreator(argsHash) {
         argsHash = argsHash || {}
+        _validate(argsHash, spec)       // Will throw if validation fails
 
-        // validate argsHash against action spec, if one was given:
-        if (spec) {
-            var specKeys = Object.keys(spec)
-            specKeys.forEach(function(k) {
-                var validator = spec[k]
-                // TODO: assign validated values to a cloned object?
-                argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
-            })
+        var payload = argsHash          // Overridden for service case below
+        if (service) {
+            // The service function *must* return a Promise, or else we throw:
+            var result = service(argsHash)
+            if (!(result instanceof Promise)) throw new Error('Service did not return a Promise')
+            else payload = result
         }
 
-        var action = { type: key, payload: argsHash, meta: {} }
+        var action = { type: key, payload: payload, meta: {} }
 
         // If action argument is an error object, follow the FSA convention:
         // TODO: skip validation for error case?
@@ -37,9 +55,12 @@ function createFaction(actionSpecs, options) {
 
     for (var key in actionSpecs) {
         types[key] = key
+
         var spec = actionSpecs[key]
         if (!spec) break
-        else creators[key] = _makePlainActionCreator(key, spec)
+        else if (spec._service) {
+            creators[key] = _makeActionCreator(key, spec._spec, spec._service)
+        } else creators[key] = _makeActionCreator(key, spec)
     }
 
     return {
@@ -50,8 +71,16 @@ function createFaction(actionSpecs, options) {
 
 
 // TODO: need redux middleware for this
-// TODO: need module-level service registry
 function useService(service, argSpecs) {
+    if (typeof service !== 'function') {
+        throw new Error('First arg to useService must be a function, got: ' +
+                        JSON.stringify(service))
+    }
+
+    return {
+        _service: service,
+        _spec: argSpecs
+    }
 }
 
 
