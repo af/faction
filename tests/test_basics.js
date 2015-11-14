@@ -39,9 +39,9 @@ test('types and creators are frozen', function(t) {
     t.end()
 })
 
-test('errors are handling correctly', function(t) {
+test('errors are handled correctly and do not trigger validation', function(t) {
     var err = new Error('fail')
-    var output = faction.create({ TEST_ACTION: {} })
+    var output = faction.create({ TEST_ACTION: { msg: faction.validators.string } })
     var result = output.creators.TEST_ACTION(err)
 
     t.equal(result.error, true)

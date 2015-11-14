@@ -2,16 +2,15 @@
 'use strict'
 
 
+// Validate the arguments passed in to an action creator against the schema
+// that is declared in faction.create()
 function _validate(argsHash, spec) {
-    // validate argsHash against action spec, if one was given:
-    if (spec) {
-        var specKeys = Object.keys(spec)
-        specKeys.forEach(function(k) {
-            var validator = spec[k]
-            // TODO: assign validated values to a cloned object?
-            argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
-        })
-    }
+    var specKeys = Object.keys(spec)
+    specKeys.forEach(function(k) {
+        var validator = spec[k]
+        // TODO: assign validated values to a cloned object?
+        argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
+    })
 }
 
 
@@ -24,24 +23,25 @@ function _validate(argsHash, spec) {
 // passed in to it will be the action payload.
 function _makeActionCreator(key, spec, service) {
     return function actionCreator(argsHash) {
-        argsHash = argsHash || {}
-        _validate(argsHash, spec)       // Will throw if validation fails
+        var action = { type: key, meta: {} }    // payload is set below
 
-        var payload = argsHash          // Overridden for service case below
+        // If action argument is an error object, follow the FSA conventions:
+        if (argsHash instanceof Error) {
+            action.error = true
+            action.payload = argsHash
+            return action
+        }
+
+        argsHash = argsHash || {}
+        if (spec) _validate(argsHash, spec)     // Will throw if validation fails
+
         if (service) {
             // The service function *must* return a Promise, or else we throw:
             var result = service(argsHash)
             if (!(result instanceof Promise)) throw new Error('Service did not return a Promise')
-            else payload = result
-        }
-
-        var action = { type: key, payload: payload, meta: {} }
-
-        // If action argument is an error object, follow the FSA convention:
-        // TODO: skip validation for error case?
-        if (argsHash instanceof Error) {
-            action.error = true
-            return action
+            action.payload = result
+        } else {
+            action.payload = argsHash
         }
 
         return action
