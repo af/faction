@@ -12,7 +12,8 @@ creating and managing Flux actions. Early WIP!
 ## Basic Usage
 
 *Note: these examples use ES6/2015 for brevity, but faction will work in any ES5
-environment (though you may need a Promise polyfill for async action creators).*
+environment (though you will need Promise & Object.assign() polyfills for async
+action creators).*
 
 **actions.js**
 ```js
@@ -69,9 +70,8 @@ actions.creators.FETCH_TODOS({ count: 5 })
 Note that all of the asynchronous logic is isolated in a simple function that can
 be tested (or mocked if need be) in complete isolation.
 
-If you're using [redux](https://github.com/rackt/redux) you can then use the
-[redux-promise](https://github.com/acdlite/redux-promise) middleware to painlessly
-deal with these Promise action payloads.
+If you're using [redux](https://github.com/rackt/redux) you can then use faction's
+built-in middleware to painlessly deal with these Promise action payloads.
 
 
 ## License

@@ -1,6 +1,9 @@
 ;(function(global) {       // IIFE for legacy non-module usage
 'use strict'
 
+function isPromise(x) {
+    return x && typeof x.then === 'function'
+}
 
 // Validate the arguments passed in to an action creator against the schema
 // that is declared in faction.create()
@@ -38,8 +41,7 @@ function _makeActionCreator(key, spec, service) {
         if (service) {
             // The service function *must* return a Promise, or else we throw:
             var result = service(argsHash)
-            var resultIsPromise = result && typeof result.then === 'function'
-            if (!resultIsPromise) throw new Error('Service did not return a Promise')
+            if (!isPromise(result)) throw new Error('Service did not return a Promise')
             action.payload = result
         } else {
             action.payload = argsHash
@@ -83,6 +85,23 @@ function useService(service, argSpecs) {
     return {
         _service: service,
         _spec: argSpecs
+    }
+}
+
+
+function factionServiceMiddleware(store) {
+    var dispatch = store.dispatch
+    var oa = function(x, y) { return Object.assign({}, x, y) }
+    return function(next) {
+        return function(action) {
+            if (!isPromise(action.payload)) return next(action)
+
+            action.payload.then(function(result) {
+                dispatch(oa(action, { payload: result }))
+            }).catch(function(error) {
+                dispatch(oa(action, { payload: error, error: true }))
+            })
+        }
     }
 }
 
@@ -169,6 +188,7 @@ var exports = {
     create: createFaction,
     useService: useService,
     validators: validators,
+    middleware: factionServiceMiddleware,
     ActionParamError: ActionParamError
 }
 
