@@ -195,7 +195,7 @@ for (var k in validators) {
 var exports = {
     create: createFaction,
     useService: useService,
-    validators: validators,
+    v: validators,
     middleware: factionServiceMiddleware,
     ActionParamError: ActionParamError
 }

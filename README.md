@@ -17,9 +17,8 @@ action creators).*
 
 **actions.js**
 ```js
-import faction, { validators } from 'faction'
+import faction, { v } from 'faction'
 
-const v = validators
 const actions = faction.create({
     ADD_TODO:  { text: v.string },
     EDIT_TODO: { text: v.string },
@@ -49,13 +48,12 @@ Faction supports asynchronous action creators using "services". A service is
 simply a function that returns a Promise. Here's a simple example:
 
 ```js
-import faction, { useService, validators } from 'faction'
+import faction, { useService, v } from 'faction'
 
 // A service is any function that returns a Promise, as shown here using
 // the `fetch()` API to get some data from the server:
 const myService = ({ count }) => fetch(`/api/todos?limit=${count}`)
 
-const v = validators
 const actions = faction.create({
     FETCH_TODOS: useService(myService, { count: v.number })
 }

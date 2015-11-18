@@ -1,6 +1,6 @@
 var test = require('tape')
 var faction = require('..')
-var v = faction.validators
+var v = faction.v
 var ActionParamError = faction.ActionParamError
 
 

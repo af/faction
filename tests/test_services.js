@@ -6,7 +6,7 @@ require('es6-promise').polyfill()
 test('Async action creators with services', function(t) {
     var s = function(args) { return Promise.resolve(args.msg) }
     var f = faction.create({
-        SERVICE_ACTION: faction.useService(s, { msg: faction.validators.string })
+        SERVICE_ACTION: faction.useService(s, { msg: faction.v.string })
     })
 
     t.plan(5)
@@ -25,7 +25,7 @@ test('Async action creators with services', function(t) {
 test('Async creators with rejecting promises', function(t) {
     var s = function(args) { return Promise.reject(args.msg) }
     var f = faction.create({
-        REJECT_ACTION: faction.useService(s, { msg: faction.validators.string })
+        REJECT_ACTION: faction.useService(s, { msg: faction.v.string })
     })
 
     t.plan(5)
