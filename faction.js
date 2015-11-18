@@ -89,12 +89,20 @@ function useService(service, argSpecs) {
 }
 
 
+// Redux middleware for handling async actions from services
 function factionServiceMiddleware(store) {
     var dispatch = store.dispatch
     var oa = function(x, y) { return Object.assign({}, x, y) }
     return function(next) {
         return function(action) {
             if (!isPromise(action.payload)) return next(action)
+
+            // Dispatch a "pending" version of the action, so reducers
+            // can set up any state related to loading:
+            dispatch(oa(action, {
+                payload: null,
+                meta: oa(action.meta, { isPending: true })
+            }))
 
             action.payload.then(function(result) {
                 dispatch(oa(action, { payload: result }))
