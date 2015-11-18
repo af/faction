@@ -16,23 +16,24 @@ environment (though you may need a Promise polyfill for async action creators).*
 
 **actions.js**
 ```js
-import faction, { validators: v } from 'faction'
+import faction, { validators } from 'faction'
 
+const v = validators
 const actions = faction.create({
     ADD_TODO:  { text: v.string },
     EDIT_TODO: { text: v.string },
     MARK_TODO: { isDone: v.boolean.withDefault(true) },
 }
 
-module.exports = actions
+export default actions
 ```
 
 **app.js**
 ```js
-let { types, creators } = require('./actions')
+import { types, creators } from './actions'
 types                               // => { ADD_TODO: 'ADD_TODO', EDIT_TODO: 'EDIT_TODO' ... }
 creators.ADD_TODO({ text: 'hi' })   // => { type: 'ADD_TODO', payload: { text: 'hi' } }
-creators.ADD_TODO()                 // => throws faction.ActionParamError
+creators.ADD_TODO()                 // => throws an error because of missing arg "text"
 ```
 
 
@@ -47,14 +48,15 @@ Faction supports asynchronous action creators using "services". A service is
 simply a function that returns a Promise. Here's a simple example:
 
 ```js
-import faction, { useService, validators: v } from 'faction'
+import faction, { useService, validators } from 'faction'
 
 // A service is any function that returns a Promise, as shown here using
 // the `fetch()` API to get some data from the server:
 const myService = ({ count }) => fetch(`/api/todos?limit=${count}`)
 
+const v = validators
 const actions = faction.create({
-    FETCH_TODOS:  useService(myService, { count: v.number })
+    FETCH_TODOS: useService(myService, { count: v.number })
 }
 
 actions.creators.FETCH_TODOS({ count: 5 })
