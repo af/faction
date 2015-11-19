@@ -23,9 +23,9 @@ function _validate(argsHash, spec) {
 //
 // Otherwise the action creator is fully synchronous, and the Object literal
 // passed in to it will be the action payload.
-function _makeActionCreator(key, spec, service) {
+function _makeActionCreator(type, spec, service) {
     return function actionCreator(argsHash) {
-        var action = { type: key, meta: {} }    // payload is set below
+        var action = { type: type, meta: {} }    // payload is set below
 
         // If action argument is an error object, follow the FSA conventions:
         if (argsHash instanceof Error) {
@@ -40,7 +40,9 @@ function _makeActionCreator(key, spec, service) {
         if (service) {
             // The service function *must* return a Promise, or else we throw:
             var result = service(argsHash)
-            if (!utils.isPromise(result)) throw new Error('Service did not return a Promise')
+            if (!utils.isPromise(result)) {
+                throw new Error('Service for ' + type + ' did not return a Promise')
+            }
             action.payload = result
         } else {
             action.payload = argsHash
