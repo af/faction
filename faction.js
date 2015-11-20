@@ -23,7 +23,7 @@ function _validate(paramsHash, spec) {
 //
 // Otherwise the action creator is fully synchronous, and the Object literal
 // passed in to it will be the action payload.
-function _makeActionCreator(type, spec, service) {
+function _makeActionCreator(type, options) {
     return function actionCreator(paramsHash) {
         var action = { type: type, meta: {} }    // payload is set below
 
@@ -35,11 +35,13 @@ function _makeActionCreator(type, spec, service) {
         }
 
         paramsHash = paramsHash || {}
-        if (spec) _validate(paramsHash, spec)     // Will throw if validation fails
 
-        if (service) {
+        // This will throw if validation fails:
+        if (options.validators) _validate(paramsHash, options.validators)
+
+        if (typeof options.service === 'function') {
             // The service function *must* return a Promise, or else we throw:
-            var result = service(paramsHash)
+            var result = options.service(paramsHash)
             if (!utils.isPromise(result)) {
                 throw new Error('Service for ' + type + ' did not return a Promise')
             }
@@ -62,9 +64,9 @@ function createFaction(actionSpecs, options) {
 
         var spec = actionSpecs[key]
         if (!spec) break
-        else if (spec._service) {
-            creators[key] = _makeActionCreator(key, spec._spec, spec._service)
-        } else creators[key] = _makeActionCreator(key, spec)
+        else if (spec.service) {
+            creators[key] = _makeActionCreator(key, spec)
+        } else creators[key] = _makeActionCreator(key, { validators: spec })
     }
 
     return {
@@ -84,8 +86,8 @@ function useService(service, argSpecs) {
     }
 
     return {
-        _service: service,
-        _spec: argSpecs
+        service: service,
+        validators: argSpecs,
     }
 }
 
