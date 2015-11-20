@@ -47,8 +47,8 @@ function _makeActionCreator(type, options) {
             }
 
             action.meta._fromFactionService = true
-            action.meta._onSuccess = options._successCb
-            action.meta._onError = options._errorCb
+            action.meta._successCb = options._successCb
+            action.meta._errorCb = options._errorCb
 
             action.payload = result
         } else {
