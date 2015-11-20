@@ -45,6 +45,11 @@ function _makeActionCreator(type, options) {
             if (!utils.isPromise(result)) {
                 throw new Error('Service for ' + type + ' did not return a Promise')
             }
+
+            action.meta._fromFactionService = true
+            action.meta._onSuccess = options._successCb
+            action.meta._onError = options._errorCb
+
             action.payload = result
         } else {
             action.payload = paramsHash
@@ -88,6 +93,18 @@ function useService(service, argSpecs) {
     return {
         service: service,
         validators: argSpecs,
+        _successCb: null,
+        _errorCb: null,
+        onSuccess: function(cb) {
+            if (typeof cb !== 'function') throw new Error('onSuccess takes a function')
+            this._successCb = cb
+            return this
+        },
+        onError: function(cb) {
+            if (typeof cb !== 'function') throw new Error('onError takes a function')
+            this._errorCb = cb
+            return this
+        },
     }
 }
 
@@ -96,7 +113,7 @@ var exports = {
     create: createFaction,
     useService: useService,
     v: require('./lib/validators'),
-    middleware: require('./lib/middleware'),
+    makeMiddleware: require('./lib/middleware'),
     ActionParamError: utils.ActionParamError
 }
 
