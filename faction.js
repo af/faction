@@ -6,12 +6,12 @@ var utils = require('./lib/utils')
 
 // Validate the arguments passed in to an action creator against the schema
 // that is declared in faction.create()
-function _validate(argsHash, spec) {
+function _validate(paramsHash, spec) {
     var specKeys = Object.keys(spec)
     specKeys.forEach(function(k) {
         var validator = spec[k]
         // TODO: assign validated values to a cloned object?
-        argsHash[k] = validator(argsHash[k])    // may throw ActionParamError
+        paramsHash[k] = validator(paramsHash[k])    // may throw ActionParamError
     })
 }
 
@@ -24,28 +24,28 @@ function _validate(argsHash, spec) {
 // Otherwise the action creator is fully synchronous, and the Object literal
 // passed in to it will be the action payload.
 function _makeActionCreator(type, spec, service) {
-    return function actionCreator(argsHash) {
+    return function actionCreator(paramsHash) {
         var action = { type: type, meta: {} }    // payload is set below
 
         // If action argument is an error object, follow the FSA conventions:
-        if (argsHash instanceof Error) {
+        if (paramsHash instanceof Error) {
             action.error = true
-            action.payload = argsHash
+            action.payload = paramsHash
             return action
         }
 
-        argsHash = argsHash || {}
-        if (spec) _validate(argsHash, spec)     // Will throw if validation fails
+        paramsHash = paramsHash || {}
+        if (spec) _validate(paramsHash, spec)     // Will throw if validation fails
 
         if (service) {
             // The service function *must* return a Promise, or else we throw:
-            var result = service(argsHash)
+            var result = service(paramsHash)
             if (!utils.isPromise(result)) {
                 throw new Error('Service for ' + type + ' did not return a Promise')
             }
             action.payload = result
         } else {
-            action.payload = argsHash
+            action.payload = paramsHash
         }
 
         return action
