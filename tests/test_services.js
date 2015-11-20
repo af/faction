@@ -1,6 +1,5 @@
 var test = require('tape')
 var faction = require('..')
-require('es6-promise').polyfill()
 
 
 test('Async action creators with services', function(t) {

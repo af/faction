@@ -27,7 +27,6 @@
   },
   "homepage": "https://github.com/af/faction",
   "devDependencies": {
-    "es6-promise": "3.0.2",
     "ghooks": "0.3.2",
     "sinon": "1.17.2",
     "tape": "4.2.0"

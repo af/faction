@@ -1,7 +1,6 @@
 var test = require('tape')
 var sinon = require('sinon')
 var faction = require('..')
-require('es6-promise').polyfill()
 
 
 var creator = function() {

@@ -95,6 +95,15 @@ action that is dispatched from the middleware (again with the same `type`):
 ```
 
 
+## Running tests
+
+```
+npm test
+```
+
+Note that you'll need Node 4.x or above!
+
+
 ## License
 
 MIT
