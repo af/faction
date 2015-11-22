@@ -65,3 +65,44 @@ test('onError action callbacks', function(t) {
     }, 20)
 })
 
+test('dispatching multiple follow-up actions by returning an array', function(t) {
+    var fakeStore = { dispatch: sinon.spy() }
+    var actions = faction.create({
+        FOLLOW_UP: {},
+        ANOTHER_ONE: {},
+        CHAINED: faction.useService(function() { return Promise.resolve('ok') })
+                    .onSuccess(function(c) { return [
+                            c.FOLLOW_UP({ x: 123 }),
+                            c.ANOTHER_ONE({ x: 123 })
+                        ]
+                    })
+    })
+    var middleware = faction.makeMiddleware(actions.creators)
+    var action = actions.creators.CHAINED()
+
+    t.plan(12)
+    middleware(fakeStore)(function() {})(action)
+    setTimeout(function() {
+        t.equal(fakeStore.dispatch.callCount, 4)
+
+        var firstAction = fakeStore.dispatch.firstCall.args[0]
+        t.strictEqual(firstAction.type, action.type)
+        t.strictEqual(firstAction.meta.isPending, true)
+
+        var secondAction = fakeStore.dispatch.secondCall.args[0]
+        t.strictEqual(secondAction.type, action.type)
+        t.strictEqual(secondAction.meta.isPending, undefined)
+        t.strictEqual(secondAction.payload, 'ok')
+
+        var thirdAction = fakeStore.dispatch.thirdCall.args[0]
+        t.strictEqual(thirdAction.type, 'FOLLOW_UP')
+        t.strictEqual(thirdAction.meta.isPending, undefined)
+        t.deepEqual(thirdAction.payload, { x: 123 })
+
+        var fourthAction = fakeStore.dispatch.lastCall.args[0]
+        t.strictEqual(fourthAction.type, 'ANOTHER_ONE')
+        t.strictEqual(fourthAction.meta.isPending, undefined)
+        t.deepEqual(fourthAction.payload, { x: 123 })
+    }, 20)
+})
+
