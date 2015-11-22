@@ -3,9 +3,9 @@
 A [FSA](https://github.com/acdlite/flux-standard-action)-compatible library for
 creating and managing Flux actions. Early WIP!
 
-* Keep a single point of truth for action constants
-* Optionally make an actionCreator function for each action (named after the constant)
-* Co-locate your constants and action creators and keep them DRY
+* Co-locate your action types and action creators and keep them DRY
+* Optionally make an actionCreator function for each action type
+* Automatically dispatch follow-up actions when your async actions complete
 * Validate the arguments sent to each actionCreator
 
 
@@ -39,7 +39,8 @@ creators.ADD_TODO()                 // => throws an error because of missing arg
 
 ## Parameter validation
 
-TODO
+TODO: Parameter validation is currently in flux and will be documented soon. In
+the meantime check out the source code and tests.
 
 
 ## Async action creators using services
@@ -124,11 +125,12 @@ const actions = faction.create({
     FETCH_PROFILE: useService(fetchProfile),
     LOGIN_ATTEMPT: useService(loginFn, { username: v.string, password: v.string })
                       .onSuccess((creators, action) => creators.FETCH_PROFILE())
+                      .onError((creators, action) => creators.DO_SOMETHING())
 })
 ```
 
-Note that the return value of the onSuccess callback must be an action object,
-which will then be dispatched (and run through middleware).
+Note that the return value of the onSuccess callback must be an action object
+(or an array of actions), which will then be dispatched (and run through middleware).
 
 
 ## Running tests
