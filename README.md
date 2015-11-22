@@ -73,11 +73,11 @@ be tested (or mocked if need be) in complete isolation.
 
 If you're using [redux](https://github.com/rackt/redux) you can then use faction's
 built-in middleware to painlessly deal with these Promise action payloads. In the
-preceding example, this middleware will dispatch two separate actions to the store
-as follows:
+preceding async action example, this middleware will dispatch two separate actions
+to the store as follows:
 
 First it will dispatch a "pending" action (with the same `type`), indicating that
-the asynchronous operation has begun. Note that `action.meta.isPending` is true:
+the asynchronous operation has begun. Note that `action.meta.isPending` is `true`:
 ```js
 { type: 'FETCH_TODOS',
   payload: null,
@@ -85,7 +85,7 @@ the asynchronous operation has begun. Note that `action.meta.isPending` is true:
 }
 ```
 
-When the Promise resolves, its returned value will form the payload of the second
+When the Promise resolves, its value will form the payload of the second
 action that is dispatched from the middleware (again with the same `type`):
 ```js
 { type: 'FETCH_TODOS',
@@ -93,6 +93,42 @@ action that is dispatched from the middleware (again with the same `type`):
   meta: {}
 }
 ```
+
+To set up the faction middleware, use `faction.makeMiddleware`, optionally
+passing it your action creators if you want to use Follow-up actions (which are
+explained in the next section):
+
+```js
+import { createStore, applyMiddleware } from 'redux'
+import faction from 'faction'
+import { creators } from './actions'
+
+const createStoreWithMiddleware = applyMiddleware(
+    faction.makeMiddleware(creators)
+)(createStore)
+const store = createStoreWithMiddleware(myReducer)
+```
+
+
+### Follow-up actions
+
+Sometimes you will want to trigger another action when an async action completes.
+For example, after a user logs in successfully, you may want to fetch their profile
+information in a separate request. While you can do this by writing a longer async
+action creator, it's sometimes nicer to handle this case in a more declarative way.
+Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `useService()` to
+handle these cases:
+
+```js
+const actions = faction.create({
+    FETCH_PROFILE: useService(fetchProfile),
+    LOGIN_ATTEMPT: useService(loginFn, { username: v.string, password: v.string })
+                      .onSuccess((creators, action) => creators.FETCH_PROFILE())
+})
+```
+
+Note that the return value of the onSuccess callback must be an action object,
+which will then be dispatched (and run through middleware).
 
 
 ## Running tests
