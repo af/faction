@@ -5,9 +5,9 @@ var faction = require('..')
 
 test('Async action creators with services', (t) => {
     var s = (args) => Promise.resolve(args.msg)
-    var f = faction.create({
-        SERVICE_ACTION: faction.useService(s, { msg: faction.v.string })
-    })
+    var f = faction.create((u) => ({
+        SERVICE_ACTION: u.asyncp(s, { msg: u.v.string })
+    }))
 
     t.plan(5)
     t.equal(f.types.SERVICE_ACTION, 'SERVICE_ACTION')
@@ -22,9 +22,9 @@ test('Async action creators with services', (t) => {
 
 test('Async creators with rejecting promises', (t) => {
     var s = (args) => Promise.reject(args.msg)
-    var f = faction.create({
-        REJECT_ACTION: faction.useService(s, { msg: faction.v.string })
-    })
+    var f = faction.create((u) => ({
+        REJECT_ACTION: u.asyncp(s, { msg: u.v.string })
+    }))
 
     t.plan(5)
     t.equal(f.types.REJECT_ACTION, 'REJECT_ACTION')

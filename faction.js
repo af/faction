@@ -75,27 +75,6 @@ function _makeActionCreator(type, options) {
 }
 
 
-function createFaction(actionSpecs) {
-    var types = {}
-    var creators = {}
-
-    for (var key in actionSpecs) {
-        types[key] = key
-
-        var spec = actionSpecs[key]
-        if (!spec) break
-        else if (spec.service) {
-            creators[key] = _makeActionCreator(key, spec)
-        } else creators[key] = _makeActionCreator(key, { validators: spec })
-    }
-
-    return {
-        types: Object.freeze(types),
-        creators: Object.freeze(creators)
-    }
-}
-
-
 /**
 * Register a service function for handling asynchronous actions.
 * Returns an object that createFaction() will use to make the appropriate
@@ -105,9 +84,9 @@ function createFaction(actionSpecs) {
 * @arg {object} validators - Optional hash of validators
 * @return {object} - A config object for _makeActionCreator()
 */
-function useService(service, validators) {
+function usePromise(service, validators) {
     if (typeof service !== 'function') {
-        throw new Error('First arg to useService must be a function, got: ' +
+        throw new Error('First arg to prom() must be a function, got: ' +
                         JSON.stringify(service))
     }
 
@@ -130,10 +109,34 @@ function useService(service, validators) {
 }
 
 
+function createFaction(definitionCallback) {
+    var types = {}
+    var creators = {}
+
+    // Inject an object of helpers into the provided action definition callback:
+    var actionSpecs = definitionCallback({
+        asyncp: usePromise,
+        v: require('./lib/validators')
+    })
+
+    for (var key in actionSpecs) {
+        types[key] = key
+
+        var spec = actionSpecs[key]
+        if (!spec) break
+        else if (spec.service) {
+            creators[key] = _makeActionCreator(key, spec)
+        } else creators[key] = _makeActionCreator(key, { validators: spec })
+    }
+
+    return {
+        types: Object.freeze(types),
+        creators: Object.freeze(creators)
+    }
+}
+
 var exports = {
     create: createFaction,
-    useService: useService,
-    v: require('./lib/validators'),
     makeMiddleware: require('./lib/middleware'),
     ActionParamError: utils.ActionParamError
 }

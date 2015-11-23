@@ -6,11 +6,11 @@ var faction = require('..')
 
 test('onSuccess action callbacks', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
-    var actions = faction.create({
+    var actions = faction.create((u) => ({
         FOLLOW_UP: {},
-        CHAINED: faction.useService(() => Promise.resolve('yo'))
+        CHAINED: u.asyncp(() => Promise.resolve('yo'))
                     .onSuccess((c) => c.FOLLOW_UP({ x: 123 }))
-    })
+    }))
     var middleware = faction.makeMiddleware(actions.creators)
     var action = actions.creators.CHAINED()
 
@@ -37,11 +37,11 @@ test('onSuccess action callbacks', (t) => {
 
 test('onError action callbacks', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
-    var actions = faction.create({
+    var actions = faction.create((u) => ({
         FOLLOW_UP: {},
-        CHAINED: faction.useService(() => Promise.reject('fail'))
+        CHAINED: u.asyncp(() => Promise.reject('fail'))
                     .onError((c) => c.FOLLOW_UP({ x: 123 }))
-    })
+    }))
     var middleware = faction.makeMiddleware(actions.creators)
     var action = actions.creators.CHAINED()
 
@@ -68,15 +68,15 @@ test('onError action callbacks', (t) => {
 
 test('dispatching multiple follow-up actions by returning an array', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
-    var actions = faction.create({
+    var actions = faction.create((u) => ({
         FOLLOW_UP: {},
         ANOTHER_ONE: {},
-        CHAINED: faction.useService(() => Promise.resolve('ok'))
+        CHAINED: u.asyncp(() => Promise.resolve('ok'))
                     .onSuccess((c) => [
                         c.FOLLOW_UP({ x: 123 }),
                         c.ANOTHER_ONE({ x: 123 })
                     ])
-    })
+    }))
     var middleware = faction.makeMiddleware(actions.creators)
     var action = actions.creators.CHAINED()
 

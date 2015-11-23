@@ -17,9 +17,9 @@ action creators).*
 
 **actions.js**
 ```js
-import faction, { v } from 'faction'
+import faction from 'faction'
 
-const actions = faction.create({
+const actions = faction.create(({ v }) => ({
     ADD_TODO:  { text: v.string },
     EDIT_TODO: { text: v.string },
     MARK_TODO: { isDone: v.boolean.withDefault(true) },
@@ -43,20 +43,20 @@ TODO: Parameter validation is currently in flux and will be documented soon. In
 the meantime check out the source code and tests.
 
 
-## Async action creators using services
+## Async action creators using `asyncp()`
 
 Faction supports asynchronous action creators using "services". A service is
 simply a function that returns a Promise. Here's a simple example:
 
 ```js
-import faction, { useService, v } from 'faction'
+import faction from 'faction'
 
-// A service is any function that returns a Promise, as shown here using
+// `asyncp()` wraps any function that returns a Promise, as shown here using
 // the `fetch()` API to get some data from the server:
-const myService = ({ count }) => fetch(`/api/todos?limit=${count}`)
+const fetchTodos = ({ count }) => fetch(`/api/todos?limit=${count}`)
 
-const actions = faction.create({
-    FETCH_TODOS: useService(myService, { count: v.number })
+const actions = faction.create(({ asyncp, v }) => ({
+    FETCH_TODOS: asyncp(fetchTodos, { count: v.number })
 }
 
 actions.creators.FETCH_TODOS({ count: 5 })
@@ -117,13 +117,13 @@ Sometimes you will want to trigger another action when an async action completes
 For example, after a user logs in successfully, you may want to fetch their profile
 information in a separate request. While you can do this by writing a longer async
 action creator, it's sometimes nicer to handle this case in a more declarative way.
-Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `useService()` to
+Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `asyncp()` to
 handle these cases:
 
 ```js
-const actions = faction.create({
-    FETCH_PROFILE: useService(fetchProfile),
-    LOGIN_ATTEMPT: useService(loginFn, { username: v.string, password: v.string })
+const actions = faction.create(({ prom, v } => ({
+    FETCH_PROFILE: prom(fetchProfile),
+    LOGIN_ATTEMPT: prom(loginFn, { username: v.string, password: v.string })
                       .onSuccess((creators, action) => creators.FETCH_PROFILE())
                       .onError((creators, action) => creators.DO_SOMETHING())
 })

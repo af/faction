@@ -1,13 +1,12 @@
 /* eslint no-magic-numbers: 0 */
 var test = require('tape')
 var faction = require('..')
-var v = faction.v
 var ActionParamError = faction.ActionParamError
 
 
-var f = faction.create({
-    DO_X: { foo: v.string, bar: v.number }
-})
+var f = faction.create((u) => ({
+    DO_X: { foo: u.v.string, bar: u.v.number }
+}))
 
 test('passing valid action parameters', (t) => {
     var action = f.creators.DO_X({ foo: 'hi', bar: 4 })

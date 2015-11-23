@@ -1,9 +1,9 @@
-var test = require('tape')
-var faction = require('..')
+const test = require('tape')
+const faction = require('..')
 
 
 test('create() returns an object with types and creators', (t) => {
-    var output = faction.create({})
+    var output = faction.create(() => {})
     t.equal(typeof output, 'object')
     t.equal(typeof output.creators, 'object')
     t.equal(typeof output.types, 'object')
@@ -11,7 +11,7 @@ test('create() returns an object with types and creators', (t) => {
 })
 
 test('types and creators are created as expected', (t) => {
-    var output = faction.create({ TEST_ACTION: {} })
+    var output = faction.create(() => ({ TEST_ACTION: {} }) )
     var f = output.creators.TEST_ACTION
     t.equal(typeof f, 'function')
     t.equal(typeof f(), 'object')
@@ -27,7 +27,7 @@ test('types and creators are created as expected', (t) => {
 })
 
 test('types and creators are frozen', (t) => {
-    var output = faction.create({ TEST_ACTION: {} })
+    var output = faction.create(() => ({ TEST_ACTION: {} }) )
 
     // Try to overwrite an action creator - should fail silently
     output.creators.TEST_ACTION = 'asdf'
@@ -41,7 +41,9 @@ test('types and creators are frozen', (t) => {
 
 test('errors are handled correctly and do not trigger validation', (t) => {
     var err = new Error('fail')
-    var output = faction.create({ TEST_ACTION: { msg: faction.v.string } })
+    var output = faction.create((u) => ({
+        TEST_ACTION: { msg: u.v.string }
+    }))
     var result = output.creators.TEST_ACTION(err)
 
     t.equal(result.error, true)
