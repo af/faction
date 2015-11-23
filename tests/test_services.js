@@ -2,8 +2,8 @@ var test = require('tape')
 var faction = require('..')
 
 
-test('Async action creators with services', function(t) {
-    var s = function(args) { return Promise.resolve(args.msg) }
+test('Async action creators with services', (t) => {
+    var s = (args) => Promise.resolve(args.msg)
     var f = faction.create({
         SERVICE_ACTION: faction.useService(s, { msg: faction.v.string })
     })
@@ -16,13 +16,11 @@ test('Async action creators with services', function(t) {
     t.equal(action.type, f.types.SERVICE_ACTION)
     t.ok(action.payload instanceof Promise)
 
-    action.payload.then(function(val) {
-        t.equal(val, 'yo')
-    })
+    action.payload.then((val) => t.equal(val, 'yo'))
 })
 
-test('Async creators with rejecting promises', function(t) {
-    var s = function(args) { return Promise.reject(args.msg) }
+test('Async creators with rejecting promises', (t) => {
+    var s = (args) => Promise.reject(args.msg)
     var f = faction.create({
         REJECT_ACTION: faction.useService(s, { msg: faction.v.string })
     })
@@ -35,8 +33,6 @@ test('Async creators with rejecting promises', function(t) {
     t.equal(action.type, f.types.REJECT_ACTION)
     t.ok(action.payload instanceof Promise)
 
-    action.payload.catch(function(val) {
-        t.equal(val, 'yo')
-    })
+    action.payload.catch((val) => t.equal(val, 'yo'))
 })
 

@@ -8,7 +8,7 @@ var f = faction.create({
     DO_X: { foo: v.string, bar: v.number }
 })
 
-test('passing valid action parameters', function(t) {
+test('passing valid action parameters', (t) => {
     var action = f.creators.DO_X({ foo: 'hi', bar: 4 })
     t.equal(action.type, 'DO_X')
     t.equal(typeof action.meta, 'object')
@@ -18,14 +18,14 @@ test('passing valid action parameters', function(t) {
     t.end()
 })
 
-test('passing an invalid action parameter cases', function(t) {
+test('passing an invalid action parameter cases', (t) => {
     // No args:
-    t.throws(function() { f.creators.DO_X() }, ActionParamError)
+    t.throws(() => f.creators.DO_X(), ActionParamError)
 
     // Missing arg:
-    t.throws(function() { f.creators.DO_X({ foo: 'hi' }) }, ActionParamError)
+    t.throws(() => f.creators.DO_X({ foo: 'hi' }), ActionParamError)
 
     // Invalid arg type:
-    t.throws(function() { f.creators.DO_X({ foo: 'hi', bar: 'four' }) }, ActionParamError)
+    t.throws(() => f.creators.DO_X({ foo: 'hi', bar: 'four' }), ActionParamError)
     t.end()
 })

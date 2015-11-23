@@ -6,6 +6,7 @@
     "node"          : true,   // For testing if "module" exists
     "debug"         : false,  // Allow debugger statements
     "devel"         : false,   // Allow development statements (eg. console.log)
+    "esnext"        : true,
 
     // EcmaScript 5.
     "strict"        : false,  // Require `use strict` pragma in every file.

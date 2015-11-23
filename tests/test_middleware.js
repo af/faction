@@ -3,22 +3,19 @@ var sinon = require('sinon')
 var faction = require('..')
 
 
-var creator = function() {
-    return {
-        type: 'FOO',
-        payload: Promise.resolve('hey'),
-        meta: { _fromFactionService: true }
-    }
-}
-var errorCreator = function() {
-    return {
-        type: 'FOO',
-        payload: Promise.reject('boo'),
-        meta: { _fromFactionService: true }
-    }
-}
+var creator = () => ({
+    type: 'FOO',
+    payload: Promise.resolve('hey'),
+    meta: { _fromFactionService: true }
+})
 
-test('Promise middleware for successful actions', function(t) {
+var errorCreator = () => ({
+    type: 'FOO',
+    payload: Promise.reject('boo'),
+    meta: { _fromFactionService: true }
+})
+
+test('Promise middleware for successful actions', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
     var fakeNext = sinon.spy()
     var action = creator()
@@ -26,7 +23,7 @@ test('Promise middleware for successful actions', function(t) {
 
     t.plan(7)
     middleware(fakeStore)(fakeNext)(action)
-    setTimeout(function() {
+    setTimeout(() => {
         t.equal(fakeStore.dispatch.callCount, 2)
         t.equal(fakeNext.callCount, 0)
 
@@ -41,7 +38,7 @@ test('Promise middleware for successful actions', function(t) {
     }, 20)
 })
 
-test('Promise middleware processes errors correctly', function(t) {
+test('Promise middleware processes errors correctly', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
     var fakeNext = sinon.spy()
     var action = errorCreator()
@@ -49,7 +46,7 @@ test('Promise middleware processes errors correctly', function(t) {
 
     t.plan(8)
     middleware(fakeStore)(fakeNext)(action)
-    setTimeout(function() {
+    setTimeout(() => {
         t.equal(fakeStore.dispatch.callCount, 2)
         t.equal(fakeNext.callCount, 0)
 
@@ -65,7 +62,7 @@ test('Promise middleware processes errors correctly', function(t) {
     }, 20)
 })
 
-test('Promise middleware bypassed for non-async actions', function(t) {
+test('Promise middleware bypassed for non-async actions', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
     var fakeNext = sinon.spy()
     var action = { type: 'SYNC', payload: { foo: 'bar' } }
@@ -73,7 +70,7 @@ test('Promise middleware bypassed for non-async actions', function(t) {
 
     t.plan(2)
     middleware(fakeStore)(fakeNext)(action)
-    setTimeout(function() {
+    setTimeout(() => {
         t.equal(fakeStore.dispatch.callCount, 0)
         t.equal(fakeNext.callCount, 1)
     }, 20)

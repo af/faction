@@ -3,19 +3,19 @@ var sinon = require('sinon')
 var faction = require('..')
 
 
-test('onSuccess action callbacks', function(t) {
+test('onSuccess action callbacks', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
     var actions = faction.create({
         FOLLOW_UP: {},
-        CHAINED: faction.useService(function() { return Promise.resolve('yo') })
-                    .onSuccess(function(c) { return c.FOLLOW_UP({ x: 123 }) })
+        CHAINED: faction.useService(() => Promise.resolve('yo'))
+                    .onSuccess((c) => c.FOLLOW_UP({ x: 123 }))
     })
     var middleware = faction.makeMiddleware(actions.creators)
     var action = actions.creators.CHAINED()
 
     t.plan(9)
-    middleware(fakeStore)(function() {})(action)
-    setTimeout(function() {
+    middleware(fakeStore)(() => {})(action)
+    setTimeout(() => {
         t.equal(fakeStore.dispatch.callCount, 3)
 
         var firstAction = fakeStore.dispatch.firstCall.args[0]
@@ -34,19 +34,19 @@ test('onSuccess action callbacks', function(t) {
     }, 20)
 })
 
-test('onError action callbacks', function(t) {
+test('onError action callbacks', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
     var actions = faction.create({
         FOLLOW_UP: {},
-        CHAINED: faction.useService(function() { return Promise.reject('fail') })
-                    .onError(function(c) { return c.FOLLOW_UP({ x: 123 }) })
+        CHAINED: faction.useService(() => Promise.reject('fail'))
+                    .onError((c) => c.FOLLOW_UP({ x: 123 }))
     })
     var middleware = faction.makeMiddleware(actions.creators)
     var action = actions.creators.CHAINED()
 
     t.plan(9)
-    middleware(fakeStore)(function() {})(action)
-    setTimeout(function() {
+    middleware(fakeStore)(() => {})(action)
+    setTimeout(() => {
         t.equal(fakeStore.dispatch.callCount, 3)
 
         var firstAction = fakeStore.dispatch.firstCall.args[0]
@@ -65,24 +65,23 @@ test('onError action callbacks', function(t) {
     }, 20)
 })
 
-test('dispatching multiple follow-up actions by returning an array', function(t) {
+test('dispatching multiple follow-up actions by returning an array', (t) => {
     var fakeStore = { dispatch: sinon.spy() }
     var actions = faction.create({
         FOLLOW_UP: {},
         ANOTHER_ONE: {},
-        CHAINED: faction.useService(function() { return Promise.resolve('ok') })
-                    .onSuccess(function(c) { return [
-                            c.FOLLOW_UP({ x: 123 }),
-                            c.ANOTHER_ONE({ x: 123 })
-                        ]
-                    })
+        CHAINED: faction.useService(() => Promise.resolve('ok'))
+                    .onSuccess((c) => [
+                        c.FOLLOW_UP({ x: 123 }),
+                        c.ANOTHER_ONE({ x: 123 })
+                    ])
     })
     var middleware = faction.makeMiddleware(actions.creators)
     var action = actions.creators.CHAINED()
 
     t.plan(12)
-    middleware(fakeStore)(function() {})(action)
-    setTimeout(function() {
+    middleware(fakeStore)(() => {})(action)
+    setTimeout(() => {
         t.equal(fakeStore.dispatch.callCount, 4)
 
         var firstAction = fakeStore.dispatch.firstCall.args[0]
