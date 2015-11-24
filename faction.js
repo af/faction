@@ -1,4 +1,3 @@
-;(function(global) {       // IIFE for legacy non-module usage
 'use strict'
 
 var utils = require('./lib/utils')
@@ -60,7 +59,7 @@ function _makeActionCreator(type, options) {
 }
 
 
-function createFaction(actionSpecs, options) {
+function createFaction(actionSpecs) {
     var types = {}
     var creators = {}
 
@@ -104,7 +103,7 @@ function useService(service, argSpecs) {
             if (typeof cb !== 'function') throw new Error('onError takes a function')
             this._errorCb = cb
             return this
-        },
+        }
     }
 }
 
@@ -118,7 +117,5 @@ var exports = {
 }
 
 // Export for CommonJS, or else add a global faction variable:
-if (typeof(module) !== 'undefined') module.exports = exports
-else global.faction = exports
-
-}(this))
+if (typeof module !== 'undefined') module.exports = exports
+else if (typeof window === 'object') window.faction = exports

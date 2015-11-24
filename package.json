@@ -34,7 +34,7 @@
   },
   "config": {
     "ghooks": {
-      "pre-push": "npm test && npm run jshint"
+      "pre-push": "npm test && npm run lint"
     }
   }
 }
