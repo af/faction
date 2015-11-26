@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "./node_modules/tape/bin/tape tests/*.js",
-    "lint": "eslint faction.js tests"
+    "lint": "eslint faction.js lib"
   },
   "repository": {
     "type": "git",

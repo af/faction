@@ -3,8 +3,15 @@
 var utils = require('./lib/utils')
 
 
-// Validate the arguments passed in to an action creator against the schema
-// that is declared in faction.create()
+/**
+* Validate an action creator's params with a schema declared in faction.create()
+*
+* @private
+* @arg {object} paramsHash - The parameters passed in to an action creator
+* @arg {object} spec - A hash of name -> {validator function} pairs
+* @return {void}
+* @throws {ActionParamError} - Thrown if any parameter fails validation
+*/
 function _validate(paramsHash, spec) {
     var specKeys = Object.keys(spec)
     specKeys.forEach(function(k) {
@@ -15,25 +22,34 @@ function _validate(paramsHash, spec) {
 }
 
 
-// Return an action creator function
-//
-// If a service function is given, the action's payload will be a Promise, which
-// is returned from the service function.
-//
-// Otherwise the action creator is fully synchronous, and the Object literal
-// passed in to it will be the action payload.
+/**
+* Return an action creator function
+*
+* If a service function is given, the action's payload will be a Promise, which
+* is returned from the service function.
+*
+* Otherwise the action creator is fully synchronous, and the Object literal
+* passed in to it will be the action payload.
+*
+* @private
+* @arg {string}   type - The action's type constant
+* @arg {object}   options - Options object
+* @arg {object}     options.validators - Hash of validators to apply to inputs
+* @arg {function}   options.service - Promise-returning function used for async logic
+* @return {function} - An action creator function
+*/
 function _makeActionCreator(type, options) {
-    return function actionCreator(paramsHash) {
+    return function actionCreator(inputParams) {
         var action = { type: type, meta: {} }    // payload is set below
 
         // If action argument is an error object, follow the FSA conventions:
-        if (paramsHash instanceof Error) {
+        if (inputParams instanceof Error) {
             action.error = true
-            action.payload = paramsHash
+            action.payload = inputParams
             return action
         }
 
-        paramsHash = paramsHash || {}
+        var paramsHash = inputParams || {}
 
         // This will throw if validation fails:
         if (options.validators) _validate(paramsHash, options.validators)
@@ -80,10 +96,16 @@ function createFaction(actionSpecs) {
 }
 
 
-// Register a service function for handling asynchronous actions.
-// Returns an object that createFaction() will use to make the appropriate
-// Promise-returning action creator
-function useService(service, argSpecs) {
+/**
+* Register a service function for handling asynchronous actions.
+* Returns an object that createFaction() will use to make the appropriate
+* Promise-returning action creator
+*
+* @arg {function} service - Async handler function (should return a Promise)
+* @arg {object} validators - Optional hash of validators
+* @return {object} - A config object for _makeActionCreator()
+*/
+function useService(service, validators) {
     if (typeof service !== 'function') {
         throw new Error('First arg to useService must be a function, got: ' +
                         JSON.stringify(service))
@@ -91,7 +113,7 @@ function useService(service, argSpecs) {
 
     return {
         service: service,
-        validators: argSpecs,
+        validators: validators,
         _successCb: null,
         _errorCb: null,
         onSuccess: function(cb) {
