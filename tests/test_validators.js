@@ -1,3 +1,4 @@
+/* eslint no-magic-numbers: 0 */
 var test = require('tape')
 var faction = require('..')
 var v = faction.v
@@ -46,8 +47,8 @@ test('object validator', (t) => {
 
 test('array validator', (t) => {
     t.deepEqual(v.array([]), [])
-    t.deepEqual(v.array([1,2,3]), [1,2,3])
-    t.deepEqual(v.array([1,2,'three']), [1,2,'three'])
+    t.deepEqual(v.array([1, 2, 3]), [1, 2, 3])
+    t.deepEqual(v.array([1, 2, 'three']), [1, 2, 'three'])
     t.throws(() => v.array('5'), ActionParamError)
     t.throws(() => v.array(null), ActionParamError)
     t.throws(() => v.array(true), ActionParamError)
@@ -66,7 +67,7 @@ test('withDefault()', (t) => {
 test('enum()', (t) => {
     t.throws(() => v.number.enum('not an array'), TypeError)
 
-    var validatorWithEnum = v.number.enum([1,2,3])
+    var validatorWithEnum = v.number.enum([1, 2, 3])
     t.equal(validatorWithEnum(1), 1)
     t.equal(validatorWithEnum(2), 2)
     t.throws(() => validatorWithEnum(), ActionParamError)
@@ -75,7 +76,7 @@ test('enum()', (t) => {
 })
 
 test('enum() with a default value', (t) => {
-    var complexValidator = v.number.enum([1,2,3], 1)
+    var complexValidator = v.number.enum([1, 2, 3], 1)
     t.equal(complexValidator(1), 1)
     t.equal(complexValidator(2), 2)
     t.equal(complexValidator(), 1)

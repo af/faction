@@ -43,7 +43,7 @@
         "max-depth": [2, 4],
         "max-len": [2, 90, 4, { "ignoreUrls": true }],
         "max-nested-callbacks": [2, 3],
-        "new-cap": 2,
+        "new-cap": 0,       // Messes with capitalized action creator fns
         "no-bitwise": 1,
         "no-lonely-if": 2,
         "no-multiple-empty-lines": [2, { "max": 3 }],

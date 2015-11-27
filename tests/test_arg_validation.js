@@ -1,3 +1,4 @@
+/* eslint no-magic-numbers: 0 */
 var test = require('tape')
 var faction = require('..')
 var v = faction.v
