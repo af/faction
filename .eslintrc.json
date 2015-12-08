@@ -2,7 +2,7 @@
     "extends": "eslint:recommended",
     "rules": {
         // Possible errors & best practices
-        "complexity": [2, 6],
+        "complexity": [1, 7],
         "consistent-return": 2,
         "curly": [2, "multi-line"],
         "dot-notation": 2,
