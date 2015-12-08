@@ -54,20 +54,25 @@ function _makeActionCreator(type, options) {
         // This will throw if validation fails:
         if (options.validators) _validate(paramsHash, options.validators)
 
-        if (typeof options.service === 'function') {
-            // The service function *must* return a Promise, or else we throw:
-            var result = options.service(paramsHash)
-            if (!utils.isPromise(result)) {
-                throw new Error('Service for ' + type + ' did not return a Promise')
-            }
-
+        if (typeof options.service !== 'function') {
+            action.payload = paramsHash
+        } else {
             action.meta._fromFactionService = true
             action.meta._successCb = options._successCb
             action.meta._errorCb = options._errorCb
 
-            action.payload = result
-        } else {
-            action.payload = paramsHash
+            if (options._executeInMiddleware) {
+                action.meta._executeInMiddleware = true
+                action.meta._deferredHandler = options.service
+                action.meta._deferredInputs = paramsHash
+            } else {
+                // The service function *must* return a Promise, or else we throw:
+                var result = options.service(paramsHash)
+                if (!utils.isPromise(result)) {
+                    throw new Error('Service for ' + type + ' did not return a Promise')
+                }
+                action.payload = result
+            }
         }
 
         return action
@@ -80,11 +85,12 @@ function _makeActionCreator(type, options) {
 * Returns an object that createFaction() will use to make the appropriate
 * Promise-returning action creator
 *
+* @arg {boolean} deferExecution - If true, execute the service function in middleware.
 * @arg {function} service - Async handler function (should return a Promise)
 * @arg {object} validators - Optional hash of validators
 * @return {object} - A config object for _makeActionCreator()
 */
-function usePromise(service, validators) {
+function usePromise(deferExecution, service, validators) {
     if (typeof service !== 'function') {
         throw new Error('First arg to prom() must be a function, got: ' +
                         JSON.stringify(service))
@@ -93,6 +99,7 @@ function usePromise(service, validators) {
     return {
         service: service,
         validators: validators,
+        _executeInMiddleware: deferExecution,
         _successCb: null,
         _errorCb: null,
         onSuccess: function(cb) {
@@ -115,7 +122,8 @@ function createFaction(definitionCallback) {
 
     // Inject an object of helpers into the provided action definition callback:
     var actionSpecs = definitionCallback({
-        asyncp: usePromise,
+        asyncp: usePromise.bind(null, false),
+        withStore: usePromise.bind(null, true),
         v: require('./lib/validators')
     })
 

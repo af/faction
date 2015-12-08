@@ -1,5 +1,6 @@
 /* eslint no-magic-numbers: 0 */
 var test = require('tape')
+var sinon = require('sinon')
 var faction = require('..')
 
 
@@ -35,5 +36,33 @@ test('Async creators with rejecting promises', (t) => {
     t.ok(action.payload instanceof Promise)
 
     action.payload.catch((val) => t.equal(val, 'yo'))
+})
+
+
+test('Async creators that use store access', (t) => {
+    var s = (args, store) => Promise.resolve(store.getState())
+    var f = faction.create((u) => ({
+        STORE_ACTION: u.withStore(s, { msg: u.v.string })
+    }))
+
+    var store = {
+        getState: function() { return 'STATE' },
+        dispatch: sinon.spy()
+    }
+    var mw = faction.makeMiddleware({})(store)()
+
+    t.plan(7)
+    t.equal(f.types.STORE_ACTION, 'STORE_ACTION')
+    t.equal(typeof f.creators.STORE_ACTION, 'function')
+
+    var action = f.creators.STORE_ACTION({ msg: 'yo' })
+    t.equal(action.type, f.types.STORE_ACTION)
+    setTimeout(function() {
+        mw(action)
+        t.ok(action.payload instanceof Promise)
+        action.payload.then((val) => t.equal(val, 'STATE'))
+        t.equal(store.dispatch.callCount, 1)
+        t.equal(store.dispatch.firstCall.args[0].type, 'STORE_ACTION')
+    }, 20)
 })
 
