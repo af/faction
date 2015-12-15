@@ -92,8 +92,7 @@ function _makeActionCreator(type, options) {
 */
 function usePromise(deferExecution, service, validators) {
     if (typeof service !== 'function') {
-        throw new Error('First arg to prom() must be a function, got: ' +
-                        JSON.stringify(service))
+        throw new Error('First arg must be a function, got: ' + JSON.stringify(service))
     }
 
     return {
