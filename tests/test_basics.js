@@ -50,3 +50,15 @@ test('errors are handled correctly and do not trigger validation', (t) => {
     t.equal(result.payload, err)
     t.end()
 })
+
+test('simple sync actions have action.meta.timestamp set', (t) => {
+    var testStartTime = +(new Date)
+    var output = faction.create(() => ({ TEST_ACTION: {} }))
+    var result = output.creators.TEST_ACTION({ str: 'hi' })
+
+    t.deepEqual(result.payload, { str: 'hi' })
+    t.equal(typeof result.meta.timestamp, 'number')
+    t.ok(result.meta.timestamp <= +(new Date))   // Should be slightly in the past
+    t.ok(result.meta.timestamp >= testStartTime)   // Should be slightly in the past
+    t.end()
+})

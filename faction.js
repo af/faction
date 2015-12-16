@@ -75,7 +75,7 @@ function _makeActionCreator(type, options) {
             }
         }
 
-        return action
+        return utils.addTimestamp(action)
     }
 }
 
