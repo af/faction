@@ -51,6 +51,18 @@ test('errors are handled correctly and do not trigger validation', (t) => {
     t.end()
 })
 
+test('action.meta.inputs stores a serializable copy of the action inputs', (t) => {
+    var output = faction.create((u) => ({
+        TEST_ACTION: { msg: u.v.string }
+    }))
+    var args = { msg: 'hello there' }
+    var result = output.creators.TEST_ACTION(args)
+
+    t.deepEqual(result.meta.inputs, args)
+    t.deepEqual(result.payload, args)
+    t.end()
+})
+
 test('simple sync actions have action.meta.timestamp set', (t) => {
     var testStartTime = +(new Date)
     var output = faction.create(() => ({ TEST_ACTION: {} }))

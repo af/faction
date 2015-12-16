@@ -53,6 +53,7 @@ function _makeActionCreator(type, options) {
 
         // This will throw if validation fails:
         if (options.validators) _validate(paramsHash, options.validators)
+        action.meta.inputs = JSON.parse(JSON.stringify(paramsHash))
 
         if (typeof options.service !== 'function') {
             action.payload = paramsHash
@@ -64,7 +65,6 @@ function _makeActionCreator(type, options) {
             if (options._executeInMiddleware) {
                 action.meta._executeInMiddleware = true
                 action.meta._deferredHandler = options.service
-                action.meta._deferredInputs = paramsHash
             } else {
                 // The service function *must* return a Promise, or else we throw:
                 var result = options.service(paramsHash)
