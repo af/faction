@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "./node_modules/tape/bin/tape tests/*.js",
+    "coverage": "istanbul cover tape -- tests/*.js",
     "lint": "eslint faction.js lib tests"
   },
   "repository": {
@@ -29,6 +30,7 @@
   "devDependencies": {
     "eslint": "1.10.1",
     "ghooks": "0.3.2",
+    "istanbul": "0.4.1",
     "sinon": "1.17.2",
     "tape": "4.2.0"
   },
