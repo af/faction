@@ -121,9 +121,9 @@ Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `asyncp()` to
 handle these cases:
 
 ```js
-const actions = faction.create(({ prom, v } => ({
-    FETCH_PROFILE: prom(fetchProfile),
-    LOGIN_ATTEMPT: prom(loginFn, { username: v.string, password: v.string })
+const actions = faction.create(({ asyncp, v } => ({
+    FETCH_PROFILE: asyncp(fetchProfile),
+    LOGIN_ATTEMPT: asyncp(loginFn, { username: v.string, password: v.string })
                       .onSuccess((creators, action) => creators.FETCH_PROFILE())
                       .onError((creators, action) => creators.DO_SOMETHING())
 })
