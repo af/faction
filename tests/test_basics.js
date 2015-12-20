@@ -3,7 +3,7 @@ const faction = require('..')
 
 
 test('create() returns an object with types and creators', (t) => {
-    var output = faction.create(() => {})
+    const output = faction.create(() => {})
     t.equal(typeof output, 'object')
     t.equal(typeof output.creators, 'object')
     t.equal(typeof output.types, 'object')
@@ -11,8 +11,8 @@ test('create() returns an object with types and creators', (t) => {
 })
 
 test('types and creators are created as expected', (t) => {
-    var output = faction.create(() => ({ TEST_ACTION: {} }))
-    var f = output.creators.TEST_ACTION
+    const output = faction.create(() => ({ TEST_ACTION: {} }))
+    const f = output.creators.TEST_ACTION
     t.equal(typeof f, 'function')
     t.equal(typeof f(), 'object')
     t.equal(f().type, 'TEST_ACTION')
@@ -27,7 +27,7 @@ test('types and creators are created as expected', (t) => {
 })
 
 test('types and creators are frozen', (t) => {
-    var output = faction.create(() => ({ TEST_ACTION: {} }))
+    const output = faction.create(() => ({ TEST_ACTION: {} }))
 
     // Try to overwrite an action creator - should fail silently
     output.creators.TEST_ACTION = 'asdf'
@@ -40,11 +40,11 @@ test('types and creators are frozen', (t) => {
 })
 
 test('errors are handled correctly and do not trigger validation', (t) => {
-    var err = new Error('fail')
-    var output = faction.create((u) => ({
+    const err = new Error('fail')
+    const output = faction.create((u) => ({
         TEST_ACTION: { msg: u.v.string }
     }))
-    var result = output.creators.TEST_ACTION(err)
+    const result = output.creators.TEST_ACTION(err)
 
     t.equal(result.error, true)
     t.equal(result.payload, err)
@@ -52,11 +52,11 @@ test('errors are handled correctly and do not trigger validation', (t) => {
 })
 
 test('action.meta.inputs stores a serializable copy of the action inputs', (t) => {
-    var output = faction.create((u) => ({
+    const output = faction.create((u) => ({
         TEST_ACTION: { msg: u.v.string }
     }))
-    var args = { msg: 'hello there' }
-    var result = output.creators.TEST_ACTION(args)
+    const args = { msg: 'hello there' }
+    const result = output.creators.TEST_ACTION(args)
 
     t.deepEqual(result.meta.inputs, args)
     t.deepEqual(result.payload, args)
@@ -64,9 +64,9 @@ test('action.meta.inputs stores a serializable copy of the action inputs', (t) =
 })
 
 test('simple sync actions have action.meta.timestamp set', (t) => {
-    var testStartTime = +(new Date)
-    var output = faction.create(() => ({ TEST_ACTION: {} }))
-    var result = output.creators.TEST_ACTION({ str: 'hi' })
+    const testStartTime = +(new Date)
+    const output = faction.create(() => ({ TEST_ACTION: {} }))
+    const result = output.creators.TEST_ACTION({ str: 'hi' })
 
     t.deepEqual(result.payload, { str: 'hi' })
     t.equal(typeof result.meta.timestamp, 'number')

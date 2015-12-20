@@ -1,27 +1,27 @@
 /* eslint no-magic-numbers: 0 */
-var test = require('tape')
-var sinon = require('sinon')
-var faction = require('..')
+const test = require('tape')
+const sinon = require('sinon')
+const faction = require('..')
 
 
-var creator = () => ({
+const creator = () => ({
     type: 'FOO',
     payload: Promise.resolve('hey'),
     meta: { _fromFactionService: true }
 })
 
-var errorCreator = () => ({
+const errorCreator = () => ({
     type: 'FOO',
     payload: Promise.reject('boo'),
     meta: { _fromFactionService: true }
 })
 
 test('Promise middleware for successful actions', (t) => {
-    var testStartTime = +(new Date)
-    var fakeStore = { dispatch: sinon.spy() }
-    var fakeNext = sinon.spy()
-    var action = creator()
-    var middleware = faction.makeMiddleware({})
+    const testStartTime = +(new Date)
+    const fakeStore = { dispatch: sinon.spy() }
+    const fakeNext = sinon.spy()
+    const action = creator()
+    const middleware = faction.makeMiddleware({})
 
     t.plan(14)
     middleware(fakeStore)(fakeNext)(action)
@@ -29,7 +29,7 @@ test('Promise middleware for successful actions', (t) => {
         t.equal(fakeStore.dispatch.callCount, 2)
         t.equal(fakeNext.callCount, 0)
 
-        var firstAction = fakeStore.dispatch.firstCall.args[0]
+        const firstAction = fakeStore.dispatch.firstCall.args[0]
         t.strictEqual(firstAction.type, action.type)
         t.strictEqual(firstAction.meta.isPending, true)
 
@@ -38,7 +38,7 @@ test('Promise middleware for successful actions', (t) => {
         t.ok(firstAction.meta.timestamp <= +(new Date))
         t.ok(firstAction.meta.timestamp >= testStartTime)
 
-        var secondAction = fakeStore.dispatch.secondCall.args[0]
+        const secondAction = fakeStore.dispatch.secondCall.args[0]
         t.strictEqual(secondAction.type, action.type)
         t.strictEqual(secondAction.meta.isPending, undefined)
         t.strictEqual(secondAction.payload, 'hey')
@@ -52,11 +52,11 @@ test('Promise middleware for successful actions', (t) => {
 })
 
 test('Promise middleware processes errors correctly', (t) => {
-    var testStartTime = +(new Date)
-    var fakeStore = { dispatch: sinon.spy() }
-    var fakeNext = sinon.spy()
-    var action = errorCreator()
-    var middleware = faction.makeMiddleware({})
+    const testStartTime = +(new Date)
+    const fakeStore = { dispatch: sinon.spy() }
+    const fakeNext = sinon.spy()
+    const action = errorCreator()
+    const middleware = faction.makeMiddleware({})
 
     t.plan(15)
     middleware(fakeStore)(fakeNext)(action)
@@ -64,7 +64,7 @@ test('Promise middleware processes errors correctly', (t) => {
         t.equal(fakeStore.dispatch.callCount, 2)
         t.equal(fakeNext.callCount, 0)
 
-        var firstAction = fakeStore.dispatch.firstCall.args[0]
+        const firstAction = fakeStore.dispatch.firstCall.args[0]
         t.strictEqual(firstAction.type, action.type)
         t.strictEqual(firstAction.meta.isPending, true)
 
@@ -73,7 +73,7 @@ test('Promise middleware processes errors correctly', (t) => {
         t.ok(firstAction.meta.timestamp <= +(new Date))
         t.ok(firstAction.meta.timestamp >= testStartTime)
 
-        var secondAction = fakeStore.dispatch.secondCall.args[0]
+        const secondAction = fakeStore.dispatch.secondCall.args[0]
         t.strictEqual(secondAction.type, action.type)
         t.strictEqual(secondAction.meta.isPending, undefined)
         t.strictEqual(secondAction.error, true)
@@ -88,10 +88,10 @@ test('Promise middleware processes errors correctly', (t) => {
 })
 
 test('Promise middleware bypassed for non-async actions', (t) => {
-    var fakeStore = { dispatch: sinon.spy() }
-    var fakeNext = sinon.spy()
-    var action = { type: 'SYNC', payload: { foo: 'bar' } }
-    var middleware = faction.makeMiddleware({})
+    const fakeStore = { dispatch: sinon.spy() }
+    const fakeNext = sinon.spy()
+    const action = { type: 'SYNC', payload: { foo: 'bar' } }
+    const middleware = faction.makeMiddleware({})
 
     t.plan(2)
     middleware(fakeStore)(fakeNext)(action)

@@ -1,8 +1,8 @@
 /* eslint no-magic-numbers: 0 */
-var test = require('tape')
-var faction = require('..')
-var v = require('../lib/validators')
-var ActionParamError = faction.ActionParamError
+const test = require('tape')
+const faction = require('..')
+const v = require('../lib/validators')
+const ActionParamError = faction.ActionParamError
 
 
 test('string validator', (t) => {
@@ -57,7 +57,7 @@ test('array validator', (t) => {
 })
 
 test('withDefault()', (t) => {
-    var validatorWithDefault = v.number.withDefault(42)
+    const validatorWithDefault = v.number.withDefault(42)
     t.equal(validatorWithDefault(), 42)
     t.equal(validatorWithDefault(10), 10)
     t.throws(() => validatorWithDefault('asdf'), ActionParamError)
@@ -67,7 +67,7 @@ test('withDefault()', (t) => {
 test('enum()', (t) => {
     t.throws(() => v.number.enum('not an array'), TypeError)
 
-    var validatorWithEnum = v.number.enum([1, 2, 3])
+    const validatorWithEnum = v.number.enum([1, 2, 3])
     t.equal(validatorWithEnum(1), 1)
     t.equal(validatorWithEnum(2), 2)
     t.throws(() => validatorWithEnum(), ActionParamError)
@@ -76,7 +76,7 @@ test('enum()', (t) => {
 })
 
 test('enum() with a default value', (t) => {
-    var complexValidator = v.number.enum([1, 2, 3], 1)
+    const complexValidator = v.number.enum([1, 2, 3], 1)
     t.equal(complexValidator(1), 1)
     t.equal(complexValidator(2), 2)
     t.equal(complexValidator(), 1)
