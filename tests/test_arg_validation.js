@@ -5,7 +5,8 @@ var ActionParamError = faction.ActionParamError
 
 
 var f = faction.create((u) => ({
-    DO_X: { foo: u.v.string, bar: u.v.number }
+    DO_X: { foo: u.v.string, bar: u.v.number },
+    DO_Y: null
 }))
 
 test('passing valid action parameters', (t) => {
@@ -15,6 +16,12 @@ test('passing valid action parameters', (t) => {
     t.equal(action.error, undefined)
     t.equal(action.payload.foo, 'hi')
     t.equal(action.payload.bar, 4)
+    t.end()
+})
+
+test('passing null instead of parameters', (t) => {
+    t.equal(f.creators.DO_Y, undefined)     // No action creator is assigned
+    t.equal(f.types.DO_Y, 'DO_Y')
     t.end()
 })
 

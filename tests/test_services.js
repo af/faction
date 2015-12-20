@@ -4,6 +4,25 @@ var sinon = require('sinon')
 var faction = require('..')
 
 
+test('Async action creators error if no function given', (t) => {
+    t.throws(() => {
+        faction.create((u) => ({ TEST: u.asyncp('not a function', {}) }))
+    }, /must be a function/)
+    t.end()
+})
+
+test('Async action creators error if no promise returned', (t) => {
+    var s = () => 'not a promise'
+    var f = faction.create((u) => ({
+        SERVICE_ACTION: u.asyncp(s, { msg: u.v.string })
+    }))
+
+    t.throws(() => {
+        f.creators.SERVICE_ACTION({ msg: 'yo' })
+    }, /not return a Promise/)
+    t.end()
+})
+
 test('Async action creators with services', (t) => {
     var s = (args) => Promise.resolve(args.msg)
     var f = faction.create((u) => ({

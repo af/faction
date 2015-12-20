@@ -1,4 +1,4 @@
-/* eslint no-magic-numbers: 0 */
+/* eslint no-magic-numbers: 0, max-nested-callbacks: [2, 5] */
 var test = require('tape')
 var sinon = require('sinon')
 var faction = require('..')
@@ -104,5 +104,25 @@ test('dispatching multiple follow-up actions by returning an array', (t) => {
         t.strictEqual(fourthAction.meta.isPending, undefined)
         t.deepEqual(fourthAction.payload, { x: 123 })
     }, 20)
+})
+
+test('onSuccess errors if function not given', (t) => {
+    t.throws(() => {
+        faction.create((u) => ({
+            CHAINED: u.asyncp(() => Promise.resolve('yo'))
+                        .onSuccess('not a function')
+        }))
+    }, /onSuccess takes a function/)
+    t.end()
+})
+
+test('onError errors if function not given', (t) => {
+    t.throws(() => {
+        faction.create((u) => ({
+            CHAINED: u.asyncp(() => Promise.resolve('yo'))
+                        .onError('not a function')
+        }))
+    }, /onError takes a function/)
+    t.end()
 })
 
