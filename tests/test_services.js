@@ -1,7 +1,7 @@
 /* eslint no-magic-numbers: 0 */
 const test = require('tape')
-const sinon = require('sinon')
 const faction = require('..')
+const handleAction = require('./utils').handleAction
 
 
 test('Async action creators error if no function given', (t) => {
@@ -64,24 +64,14 @@ test('Async creators that use store access', (t) => {
         STORE_ACTION: u.withStore(s, { msg: u.v.string })
     }))
 
-    const store = {
-        getState: function() { return 'STATE' },
-        dispatch: sinon.spy()
-    }
-    const mw = faction.makeMiddleware({})(store)()
-
-    t.plan(7)
-    t.equal(f.types.STORE_ACTION, 'STORE_ACTION')
-    t.equal(typeof f.creators.STORE_ACTION, 'function')
-
+    t.plan(5)
     const action = f.creators.STORE_ACTION({ msg: 'yo' })
     t.equal(action.type, f.types.STORE_ACTION)
-    setTimeout(function() {
-        mw(action)
+    handleAction(action, f.creators, (dispatch) => {
         t.ok(action.payload instanceof Promise)
-        action.payload.then((val) => t.equal(val, 'yoSTATE'))
-        t.equal(store.dispatch.callCount, 1)
-        t.equal(store.dispatch.firstCall.args[0].type, 'STORE_ACTION')
-    }, 20)
+        action.payload.then((val) => t.equal(val, 'yoTESTSTATE'))
+        t.equal(dispatch.callCount, 2)
+        t.equal(dispatch.firstCall.args[0].type, 'STORE_ACTION')
+    })
 })
 
