@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/af/faction.png)](http://travis-ci.org/af/faction)
+
 # Faction
 
 A [FSA](https://github.com/acdlite/flux-standard-action)-compatible library for
