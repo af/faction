@@ -17,7 +17,12 @@ function _validate(paramsHash, spec) {
     specKeys.forEach(function(k) {
         var validator = spec[k]
         // TODO: assign validated values to a cloned object?
-        paramsHash[k] = validator(paramsHash[k])    // may throw ActionParamError
+        try {
+            paramsHash[k] = validator(paramsHash[k])    // may throw ActionParamError
+        } catch (err) {
+            var msg = 'Validation failed for "' + k + '": ' + err.message
+            throw new utils.ActionParamError(msg)
+        }
     })
 }
 

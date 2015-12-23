@@ -28,9 +28,13 @@ test('passing null instead of parameters', (t) => {
 test('passing an invalid action parameter cases', (t) => {
     // No args:
     t.throws(() => f.creators.DO_X(), ActionParamError)
+    t.throws(() => f.creators.DO_X(),
+             /Validation failed for "foo": Expected "undefined" to be a string/)
 
     // Missing arg:
     t.throws(() => f.creators.DO_X({ foo: 'hi' }), ActionParamError)
+    t.throws(() => f.creators.DO_X({ foo: 'hi' }),
+             /Validation failed for "bar": Expected "undefined" to be a number/)
 
     // Invalid arg type:
     t.throws(() => f.creators.DO_X({ foo: 'hi', bar: 'four' }), ActionParamError)
