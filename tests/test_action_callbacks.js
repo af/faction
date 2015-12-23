@@ -117,3 +117,22 @@ test('onError errors if function not given', (t) => {
     t.end()
 })
 
+test('thrown errors in onError callback are not caught by initial action', (t) => {
+    const actions = faction.create((u) => ({
+        FOLLOW_UP: u.asyncp(() => { throw new Error('ugh') }),
+        CHAINED: u.asyncp(() => Promise.resolve('yo'))
+                    .onSuccess(c => c.FOLLOW_UP())
+    }))
+    const action = actions.creators.CHAINED()
+
+    t.plan(4)
+    handleAction(action, actions.creators, (dispatch) => {
+        t.equal(dispatch.callCount, 2)
+
+        const secondAction = dispatch.secondCall.args[0]
+        t.strictEqual(secondAction.type, action.type)
+        t.strictEqual(secondAction.error, undefined)
+        t.strictEqual(secondAction.payload, 'yo')
+    })
+})
+
