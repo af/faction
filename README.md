@@ -1,6 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/af/faction.png)](http://travis-ci.org/af/faction)
-
-# Faction
+# Faction [![Build Status](https://secure.travis-ci.org/af/faction.png)](http://travis-ci.org/af/faction)
 
 A [FSA](https://github.com/acdlite/flux-standard-action)-compatible library for
 creating and managing Flux actions. Early WIP!
@@ -27,7 +25,8 @@ const actions = faction.create(({ v }) => ({
     MARK_TODO: { isDone: v.boolean.withDefault(true) },
 })
 
-export default actions
+export const types = actions.types
+export const creators = actions.creators
 ```
 
 **app.js**
@@ -141,7 +140,8 @@ Note that the return value of the onSuccess callback must be an action object
 npm test
 ```
 
-Note that you'll need Node 4.x or above!
+Note that you'll need Node 4.x or above, since some ES6 features are used in the tests.
+You can also check code coverage with `npm coverage`
 
 
 ## License
