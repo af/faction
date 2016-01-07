@@ -128,7 +128,7 @@ function createFaction(definitionCallback) {
     var actionSpecs = definitionCallback({
         asyncp: usePromise.bind(null, false),
         withStore: usePromise.bind(null, true),
-        v: require('./lib/validators')
+        v: require('./lib/validators').validators
     })
 
     for (var key in actionSpecs) {
@@ -150,6 +150,7 @@ function createFaction(definitionCallback) {
 var exports = {
     create: createFaction,
     makeMiddleware: require('./lib/middleware'),
+    makeValidator: require('./lib/validators').makeValidator,
     ActionParamError: utils.ActionParamError
 }
 

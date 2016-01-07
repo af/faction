@@ -1,7 +1,7 @@
 /* eslint no-magic-numbers: 0 */
 const test = require('tape')
 const faction = require('..')
-const v = require('../lib/validators')
+const v = require('../lib/validators').validators
 const ActionParamError = faction.ActionParamError
 
 
@@ -81,5 +81,15 @@ test('enum() with a default value', (t) => {
     t.equal(complexValidator.exec(2), 2)
     t.equal(complexValidator.exec(), 1)
     t.throws(() => complexValidator.exec(16), ActionParamError)
+    t.end()
+})
+
+test('custom validator creation and use', function(t) {
+    const custom = faction.makeValidator(function(x) {
+        if (x !== 'foo') throw new Error('foo was expected')
+        else return 'bar'
+    })
+    t.equal(custom.exec('foo'), 'bar')
+    t.throws(() => custom.exec('notbar'), Error)
     t.end()
 })
