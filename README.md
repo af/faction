@@ -40,8 +40,31 @@ creators.ADD_TODO()                 // => throws an error because of missing arg
 
 ## Parameter validation
 
-TODO: Parameter validation is currently in flux and will be documented soon. In
-the meantime check out the source code and tests.
+Faction comes with an optional set of utilities for validating the arguments to
+your action creators. This can be very handy for tracking down bugs in development,
+similar to how React's `propTypes` work. Here's a contrived example showing use of
+all the built-in validators:
+
+```js
+import faction from 'faction'
+
+const actions = faction.create(({ v }) => ({
+    ADD_TODO:  {
+        text:       v.string,
+        isDone:     v.boolean,
+        priority:   v.number,
+        tags:       v.array,
+        metadata:   v.object,
+
+        // There are two chainable add-ons that work with all built-in validators:
+        category:   v.string.enum(['WORK', 'PERSONAL']),
+        reminder:   v.boolean.withDefault(true),
+    },
+})
+```
+
+By default, these validators throw an error when an input fails validation. This
+behaviour will soon be configurable (feedback welcome!).
 
 
 ## Async action creators using `asyncp()`
