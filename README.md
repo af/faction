@@ -1,19 +1,22 @@
 # Faction [![Build Status](https://secure.travis-ci.org/af/faction.png)](http://travis-ci.org/af/faction)
 
-A [FSA](https://github.com/acdlite/flux-standard-action)-compatible library for
-creating and managing Flux actions. Early WIP!
+Utilities and conventions for managing Redux (or Flux) actions.
 
 * Co-locate your action types and action creators and keep them DRY
 * Optionally make an actionCreator function for each action type
 * Automatically dispatch follow-up actions when your async actions complete
-* Validate the arguments sent to each actionCreator
+* Validate arguments sent to each actionCreator
+* [FSA](https://github.com/acdlite/flux-standard-action)-compatible
 
 
 ## Basic Usage
 
 *Note: these examples use ES6/2015 for brevity, but faction will work in any ES5
-environment (though you will need Promise & Object.assign() polyfills for async
+environment (though you will need `Promise` & `Object.assign` polyfills for async
 action creators).*
+
+Define your actions using `faction.create()`, which transforms your declarative
+action definitions into action types and action creators:
 
 **actions.js**
 ```js
@@ -25,14 +28,15 @@ const actions = faction.create(({ v }) => ({
     MARK_TODO: { isDone: v.boolean.withDefault(true) },
 })
 
-export const types = actions.types
+export const types = actions.types  // => { ADD_TODO: 'ADD_TODO', EDIT_TODO: 'EDIT_TODO' ... }
 export const creators = actions.creators
 ```
 
+Each action creator made via `faction.create()` expects a single object argument:
+
 **app.js**
 ```js
-import { types, creators } from './actions'
-types                               // => { ADD_TODO: 'ADD_TODO', EDIT_TODO: 'EDIT_TODO' ... }
+import { creators } from './actions'
 creators.ADD_TODO({ text: 'hi' })   // => { type: 'ADD_TODO', payload: { text: 'hi' } }
 creators.ADD_TODO()                 // => throws an error because of missing arg "text"
 ```
@@ -106,7 +110,7 @@ the asynchronous operation has begun. Note that `action.meta.isPending` is `true
 ```js
 { type: 'FETCH_TODOS',
   payload: null,
-  meta: { isPending: true }
+  meta: { isPending: true, ... }
 }
 ```
 
@@ -115,13 +119,13 @@ action that is dispatched from the middleware (again with the same `type`):
 ```js
 { type: 'FETCH_TODOS',
   payload: <Promise resolution value>,
-  meta: {}
+  meta: { ... }
 }
 ```
 
 To set up the faction middleware, use `faction.makeMiddleware`, optionally
-passing it your action creators if you want to use Follow-up actions (which are
-explained in the next section):
+passing it your action creators if you want to use Follow-up actions (explained
+in the next section):
 
 ```js
 import { createStore, applyMiddleware } from 'redux'
@@ -135,7 +139,7 @@ const store = createStoreWithMiddleware(myReducer)
 ```
 
 
-### Follow-up actions
+## Follow-up actions
 
 Sometimes you will want to trigger another action when an async action completes.
 For example, after a user logs in successfully, you may want to fetch their profile
@@ -155,6 +159,14 @@ const actions = faction.create(({ asyncp, v } => ({
 
 Note that the return value of the onSuccess callback must be an action object
 (or an array of actions), which will then be dispatched (and run through middleware).
+
+
+## Meta fields
+
+Faction autmatically adds some helpful info to each action’s `meta` object:
+
+* `action.meta.timestamp` - a Unix timestamp for when the action was dispatched
+* `action.meta.inputs` - a copy of the input parameters for the action creator
 
 
 ## Running tests
