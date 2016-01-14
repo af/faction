@@ -7,7 +7,7 @@ const handleAction = require('./utils').handleAction
 test('onSuccess action callbacks', (t) => {
     const actions = faction.create((u) => ({
         FOLLOW_UP: {},
-        CHAINED: u.asyncp(() => Promise.resolve('yo'))
+        CHAINED: u.async(() => Promise.resolve('yo'))
                     .onSuccess((c) => c.FOLLOW_UP({ x: 123 }))
     }))
     const action = actions.creators.CHAINED()
@@ -35,7 +35,7 @@ test('onSuccess action callbacks', (t) => {
 test('onError action callbacks', (t) => {
     const actions = faction.create((u) => ({
         FOLLOW_UP: {},
-        CHAINED: u.asyncp(() => Promise.reject('fail'))
+        CHAINED: u.async(() => Promise.reject('fail'))
                     .onError((c) => c.FOLLOW_UP({ x: 123 }))
     }))
     const action = actions.creators.CHAINED()
@@ -64,7 +64,7 @@ test('dispatching multiple follow-up actions by returning an array', (t) => {
     const actions = faction.create((u) => ({
         FOLLOW_UP: {},
         ANOTHER_ONE: {},
-        CHAINED: u.asyncp(() => Promise.resolve('ok'))
+        CHAINED: u.async(() => Promise.resolve('ok'))
                     .onSuccess((c) => [
                         c.FOLLOW_UP({ x: 123 }),
                         c.ANOTHER_ONE({ x: 123 })
@@ -100,7 +100,7 @@ test('dispatching multiple follow-up actions by returning an array', (t) => {
 test('onSuccess errors if function not given', (t) => {
     t.throws(() => {
         faction.create((u) => ({
-            CHAINED: u.asyncp(() => Promise.resolve('yo'))
+            CHAINED: u.async(() => Promise.resolve('yo'))
                         .onSuccess('not a function')
         }))
     }, /onSuccess takes a function/)
@@ -110,7 +110,7 @@ test('onSuccess errors if function not given', (t) => {
 test('onError errors if function not given', (t) => {
     t.throws(() => {
         faction.create((u) => ({
-            CHAINED: u.asyncp(() => Promise.resolve('yo'))
+            CHAINED: u.async(() => Promise.resolve('yo'))
                         .onError('not a function')
         }))
     }, /onError takes a function/)
@@ -119,15 +119,15 @@ test('onError errors if function not given', (t) => {
 
 test('thrown errors in onError callback are not caught by initial action', (t) => {
     const actions = faction.create((u) => ({
-        FOLLOW_UP: u.asyncp(() => { throw new Error('ugh') }),
-        CHAINED: u.asyncp(() => Promise.resolve('yo'))
+        FOLLOW_UP: u.async(() => { throw new Error('ugh') }),
+        CHAINED: u.async(() => Promise.resolve('yo'))
                     .onSuccess(c => c.FOLLOW_UP())
     }))
     const action = actions.creators.CHAINED()
 
     t.plan(4)
     handleAction(action, actions.creators, (dispatch) => {
-        t.equal(dispatch.callCount, 2)
+        t.equal(dispatch.callCount, 3)
 
         const secondAction = dispatch.secondCall.args[0]
         t.strictEqual(secondAction.type, action.type)

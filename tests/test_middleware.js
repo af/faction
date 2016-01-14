@@ -1,26 +1,20 @@
 /* eslint no-magic-numbers: 0 */
+const faction = require('..')
 const test = require('tape')
 const handleAction = require('./utils').handleAction
 
 
-const creator = () => ({
-    type: 'FOO',
-    payload: Promise.resolve('hey'),
-    meta: { _fromFactionService: true }
-})
-
-const errorCreator = () => ({
-    type: 'FOO',
-    payload: Promise.reject('boo'),
-    meta: { _fromFactionService: true }
-})
+const actions = faction.create((u) => ({
+    FOO: u.async(() => Promise.resolve('hey')),
+    ERR: u.async(() => Promise.reject('boo'))
+}))
 
 test('Promise middleware for successful actions', (t) => {
     const testStartTime = +(new Date)
-    const action = creator()
+    const action = actions.creators.FOO()
 
     t.plan(14)
-    handleAction(action, { FOO: creator }, (dispatch, next) => {
+    handleAction(action, actions.creators, (dispatch, next) => {
         t.equal(dispatch.callCount, 2)
         t.equal(next.callCount, 0)
 
@@ -48,10 +42,10 @@ test('Promise middleware for successful actions', (t) => {
 
 test('Promise middleware processes errors correctly', (t) => {
     const testStartTime = +(new Date)
-    const action = errorCreator()
+    const action = actions.creators.ERR()
 
     t.plan(15)
-    handleAction(action, { FOO: errorCreator }, (dispatch, next) => {
+    handleAction(action, actions.creators, (dispatch, next) => {
         t.equal(dispatch.callCount, 2)
         t.equal(next.callCount, 0)
 

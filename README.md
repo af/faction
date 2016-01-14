@@ -71,7 +71,7 @@ By default, these validators throw an error when an input fails validation. This
 behaviour will soon be configurable (feedback welcome!).
 
 
-## Async action creators using `asyncp()`
+## Async action creators using `async()`
 
 Faction supports asynchronous action creators using "services". A service is
 simply a function that returns a Promise. Here's a simple example:
@@ -79,12 +79,12 @@ simply a function that returns a Promise. Here's a simple example:
 ```js
 import faction from 'faction'
 
-// `asyncp()` wraps any function that returns a Promise, as shown here using
+// `async()` wraps any function that returns a Promise, as shown here using
 // the `fetch()` API to get some data from the server:
 const fetchTodos = ({ count }) => fetch(`/api/todos?limit=${count}`)
 
-const actions = faction.create(({ asyncp, v }) => ({
-    FETCH_TODOS: asyncp(fetchTodos, { count: v.number })
+const actions = faction.create(({ async, v }) => ({
+    FETCH_TODOS: async(fetchTodos, { count: v.number })
 }
 
 actions.creators.FETCH_TODOS({ count: 5 })
@@ -145,13 +145,13 @@ Sometimes you will want to trigger another action when an async action completes
 For example, after a user logs in successfully, you may want to fetch their profile
 information in a separate request. While you can do this by writing a longer async
 action creator, it's sometimes nicer to handle this case in a more declarative way.
-Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `asyncp()` to
+Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `async()` to
 handle these cases:
 
 ```js
-const actions = faction.create(({ asyncp, v } => ({
-    FETCH_PROFILE: asyncp(fetchProfile),
-    LOGIN_ATTEMPT: asyncp(loginFn, { username: v.string, password: v.string })
+const actions = faction.create(({ async, v } => ({
+    FETCH_PROFILE: async(fetchProfile),
+    LOGIN_ATTEMPT: async(loginFn, { username: v.string, password: v.string })
                       .onSuccess((creators, action) => creators.FETCH_PROFILE())
                       .onError((creators, action) => creators.DO_SOMETHING())
 })
