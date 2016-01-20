@@ -5,8 +5,8 @@ const handleAction = require('./utils').handleAction
 
 
 const actions = faction.create((u) => ({
-    FOO: u.async(() => Promise.resolve('hey')),
-    ERR: u.async(() => Promise.reject('boo'))
+    FOO: u.launch(() => Promise.resolve('hey')),
+    ERR: u.launch(() => Promise.reject('boo'))
 }))
 
 test('Promise middleware for successful actions', (t) => {

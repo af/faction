@@ -6,7 +6,7 @@ const handleAction = require('./utils').handleAction
 
 test('Async action creators error if no function given', (t) => {
     t.throws(() => {
-        faction.create((u) => ({ TEST: u.async('not a function', {}) }))
+        faction.create((u) => ({ TEST: u.launch('not a function', {}) }))
     }, /must be a function/)
     t.end()
 })
@@ -14,7 +14,7 @@ test('Async action creators error if no function given', (t) => {
 test('Async creators that use store access', (t) => {
     const s = (args, store) => Promise.resolve(args.msg + store.getState())
     const f = faction.create((u) => ({
-        STORE_ACTION: u.async(s, { msg: u.v.string })
+        STORE_ACTION: u.launch(s, { msg: u.v.string })
     }))
 
     t.plan(5)

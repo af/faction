@@ -83,7 +83,7 @@ function _makeActionCreator(type, options) {
 * @arg {object} validators - Optional hash of validators
 * @return {object} - A config object for _makeActionCreator()
 */
-function usePromise(service, validators) {
+function launch(service, validators) {
     if (typeof service !== 'function') {
         throw new Error('First arg must be a function, got: ' + JSON.stringify(service))
     }
@@ -114,7 +114,7 @@ function createFaction(definitionCallback) {
 
     // Inject an object of helpers into the provided action definition callback:
     var actionSpecs = definitionCallback({
-        async: usePromise,
+        launch: launch,
         v: require('./lib/validators').validators
     })
 
