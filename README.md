@@ -74,7 +74,7 @@ behaviour will soon be configurable (feedback welcome!).
 ## Async action creators using `launch()`
 
 Faction supports asynchronous action creators using "services". A service is
-simply a function that returns a Promise. Here's a simple example:
+simply a Promise-returning function that you pass in to `launch()`. Here's a simple example:
 
 ```js
 import faction from 'faction'
@@ -95,7 +95,7 @@ actions.creators.FETCH_TODOS({ count: 5 })
 ```
 
 Note that your app's asynchronous logic is isolated in simple functions that can
-be tested (or mocked if need be) in complete isolation.
+be tested (and mocked if need be) in complete isolation.
 
 
 ## Redux middleware for async actions
@@ -123,8 +123,22 @@ action that is dispatched from the middleware (again with the same `type`):
 }
 ```
 
+Also, the service functions that you pass in to `launch()` will receive the Redux
+store as a second parameter. This allows you to dispatch extra actions if necessary,
+or access your state tree in order to create your action. Here's an example of the
+latter:
+
+```js
+const myService = (params, store) => {
+    const accessToken = store.getState().accessToken
+    return fetch('/myUrl', {
+        headers: { Authorization: 'Bearer ' + accessToken }
+    })
+}
+```
+
 To set up the faction middleware, use `faction.makeMiddleware`, optionally
-passing it your action creators if you want to use Follow-up actions (explained
+passing it your action creators if you want to use "chained" actions (explained
 in the next section):
 
 ```js
@@ -139,13 +153,13 @@ const store = createStoreWithMiddleware(myReducer)
 ```
 
 
-## Follow-up actions
+## Chained actions
 
 Sometimes you will want to trigger another action when an async action completes.
 For example, after a user logs in successfully, you may want to fetch their profile
 information in a separate request. While you can do this by writing a longer async
-action creator, it's sometimes nicer to handle this case in a more declarative way.
-Faction lets you append `chain(cb)` and `onError(cb)` calls to `launch()` in order to
+action creator, it can be preferable to handle this in a more declarative way.
+Faction lets you append `chain(cb)` and/or `onError(cb)` calls to `launch()` in order to
 handle these cases:
 
 ```js
