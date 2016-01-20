@@ -145,19 +145,19 @@ Sometimes you will want to trigger another action when an async action completes
 For example, after a user logs in successfully, you may want to fetch their profile
 information in a separate request. While you can do this by writing a longer async
 action creator, it's sometimes nicer to handle this case in a more declarative way.
-Faction lets you chain `onSuccess(cb)` and `onError(cb)` after `launch()` to
+Faction lets you append `chain(cb)` and `onError(cb)` calls to `launch()` in order to
 handle these cases:
 
 ```js
 const actions = faction.create(({ launch, v } => ({
     FETCH_PROFILE: launch(fetchProfile),
     LOGIN_ATTEMPT: launch(loginFn, { username: v.string, password: v.string })
-                      .onSuccess((creators, action) => creators.FETCH_PROFILE())
+                      .chain((creators, action) => creators.FETCH_PROFILE())
                       .onError((creators, action) => creators.DO_SOMETHING())
 })
 ```
 
-Note that the return value of the onSuccess callback must be an action object
+Note that the return value of the `chain()` callback must be an action object
 (or an array of actions), which will then be dispatched (and run through middleware).
 
 

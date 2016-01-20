@@ -94,8 +94,8 @@ function launch(service, validators) {
         _executeInMiddleware: true,
         _successCb: null,
         _errorCb: null,
-        onSuccess: function(cb) {
-            if (typeof cb !== 'function') throw new Error('onSuccess takes a function')
+        chain: function(cb) {
+            if (typeof cb !== 'function') throw new Error('chain() takes a function')
             this._successCb = cb
             return this
         },

@@ -4,11 +4,11 @@ const faction = require('..')
 const handleAction = require('./utils').handleAction
 
 
-test('onSuccess action callbacks', (t) => {
+test('chain() action callbacks', (t) => {
     const actions = faction.create((u) => ({
         FOLLOW_UP: {},
         CHAINED: u.launch(() => Promise.resolve('yo'))
-                    .onSuccess((c) => c.FOLLOW_UP({ x: 123 }))
+                    .chain((c) => c.FOLLOW_UP({ x: 123 }))
     }))
     const action = actions.creators.CHAINED()
 
@@ -65,7 +65,7 @@ test('dispatching multiple follow-up actions by returning an array', (t) => {
         FOLLOW_UP: {},
         ANOTHER_ONE: {},
         CHAINED: u.launch(() => Promise.resolve('ok'))
-                    .onSuccess((c) => [
+                    .chain((c) => [
                         c.FOLLOW_UP({ x: 123 }),
                         c.ANOTHER_ONE({ x: 123 })
                     ])
@@ -97,13 +97,13 @@ test('dispatching multiple follow-up actions by returning an array', (t) => {
     })
 })
 
-test('onSuccess errors if function not given', (t) => {
+test('chain() errors if function not given', (t) => {
     t.throws(() => {
         faction.create((u) => ({
             CHAINED: u.launch(() => Promise.resolve('yo'))
-                        .onSuccess('not a function')
+                        .chain('not a function')
         }))
-    }, /onSuccess takes a function/)
+    }, /chain\(\) takes a function/)
     t.end()
 })
 
@@ -121,7 +121,7 @@ test('thrown errors in onError callback are not caught by initial action', (t) =
     const actions = faction.create((u) => ({
         FOLLOW_UP: u.launch(() => { throw new Error('ugh') }),
         CHAINED: u.launch(() => Promise.resolve('yo'))
-                    .onSuccess(c => c.FOLLOW_UP())
+                    .chain(c => c.FOLLOW_UP())
     }))
     const action = actions.creators.CHAINED()
 
