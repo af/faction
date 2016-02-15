@@ -1,6 +1,6 @@
 {
   "name": "faction",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Utilities for simple, DRY flux actions",
   "main": "faction.js",
   "directories": {
